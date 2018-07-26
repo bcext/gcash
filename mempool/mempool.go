@@ -131,7 +131,7 @@ type Policy struct {
 	// fraction of the max signature operations for a block.
 	MaxSigOpCostPerTx int
 
-	// MinRelayTxFee defines the minimum transaction fee in BTC/kB to be
+	// MinRelayTxFee defines the minimum transaction fee in BCH/kB to be
 	// considered a non-zero fee.
 	MinRelayTxFee btcutil.Amount
 }
@@ -1175,7 +1175,7 @@ func (mp *TxPool) RawMempoolVerbose() map[string]*btcjson.GetRawMempoolVerboseRe
 
 		mpd := &btcjson.GetRawMempoolVerboseResult{
 			Size:             int32(tx.MsgTx().SerializeSize()),
-			Fee:              btcutil.Amount(desc.Fee).ToBTC(),
+			Fee:              btcutil.Amount(desc.Fee).ToBCH(),
 			Time:             desc.Added.Unix(),
 			Height:           int64(desc.Height),
 			StartingPriority: desc.StartingPriority,
