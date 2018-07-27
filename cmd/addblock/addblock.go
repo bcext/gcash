@@ -9,10 +9,10 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/btcsuite/btcd/blockchain"
-	"github.com/btcsuite/btcd/blockchain/indexers"
-	"github.com/btcsuite/btcd/database"
-	"github.com/btcsuite/btcd/limits"
+	"github.com/bcext/gcash/blockchain"
+	"github.com/bcext/gcash/blockchain/indexers"
+	"github.com/bcext/gcash/database"
+	"github.com/bcext/gcash/limits"
 	"github.com/btcsuite/btclog"
 )
 

@@ -9,15 +9,15 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/btcsuite/btcd/btcec"
-	"github.com/btcsuite/btcd/chaincfg"
-	"github.com/btcsuite/btcd/wire"
-	"github.com/btcsuite/btcutil"
+	"github.com/bcext/gcash/btcec"
+	"github.com/bcext/gcash/chaincfg"
+	"github.com/bcext/gcash/wire"
+	"github.com/bcext/cashutil"
 )
 
 // RawTxInSignature returns the serialized ECDSA signature for the input idx of
 // the given transaction, with hashType appended to it.
-func RawTxInSignature(tx *wire.MsgTx, idx int, subScript []byte, amount btcutil.Amount,
+func RawTxInSignature(tx *wire.MsgTx, idx int, subScript []byte, amount cashutil.Amount,
 	hashType SigHashType, key *btcec.PrivateKey) ([]byte, error) {
 
 	hash, err := CalcSignatureHash(subScript, amount, hashType, tx, idx)
@@ -40,7 +40,7 @@ func RawTxInSignature(tx *wire.MsgTx, idx int, subScript []byte, amount btcutil.
 // as the idx'th input. privKey is serialized in either a compressed or
 // uncompressed format based on compress. This format must match the same format
 // used to generate the payment address, or the script validation will fail.
-func SignatureScript(tx *wire.MsgTx, idx int, subscript []byte, amount btcutil.Amount,
+func SignatureScript(tx *wire.MsgTx, idx int, subscript []byte, amount cashutil.Amount,
 	hashType SigHashType, privKey *btcec.PrivateKey, compress bool) ([]byte, error) {
 
 	sig, err := RawTxInSignature(tx, idx, subscript, amount, hashType, privKey)
@@ -59,7 +59,7 @@ func SignatureScript(tx *wire.MsgTx, idx int, subscript []byte, amount btcutil.A
 	return NewScriptBuilder().AddData(sig).AddData(pkData).Script()
 }
 
-func p2pkSignatureScript(tx *wire.MsgTx, idx int, subScript []byte, amount btcutil.Amount,
+func p2pkSignatureScript(tx *wire.MsgTx, idx int, subScript []byte, amount cashutil.Amount,
 	hashType SigHashType, privKey *btcec.PrivateKey) ([]byte, error) {
 	sig, err := RawTxInSignature(tx, idx, subScript, amount, hashType, privKey)
 	if err != nil {
@@ -73,8 +73,8 @@ func p2pkSignatureScript(tx *wire.MsgTx, idx int, subScript []byte, amount btcut
 // possible. It returns the generated script and a boolean if the script fulfils
 // the contract (i.e. nrequired signatures are provided).  Since it is arguably
 // legal to not be able to sign any of the outputs, no error is returned.
-func signMultiSig(tx *wire.MsgTx, idx int, subScript []byte, amount btcutil.Amount, hashType SigHashType,
-	addresses []btcutil.Address, nRequired int, kdb KeyDB) ([]byte, bool) {
+func signMultiSig(tx *wire.MsgTx, idx int, subScript []byte, amount cashutil.Amount, hashType SigHashType,
+	addresses []cashutil.Address, nRequired int, kdb KeyDB) ([]byte, bool) {
 	// We start with a single OP_FALSE to work around the (now standard)
 	// but in the reference implementation that causes a spurious pop at
 	// the end of OP_CHECKMULTISIG.
@@ -103,9 +103,9 @@ func signMultiSig(tx *wire.MsgTx, idx int, subScript []byte, amount btcutil.Amou
 }
 
 func sign(chainParams *chaincfg.Params, tx *wire.MsgTx, idx int,
-	subScript []byte, hashType SigHashType, amount btcutil.Amount,
+	subScript []byte, hashType SigHashType, amount cashutil.Amount,
 	kdb KeyDB, sdb ScriptDB) ([]byte,
-	ScriptClass, []btcutil.Address, int, error) {
+	ScriptClass, []cashutil.Address, int, error) {
 
 	class, addresses, nrequired, err := ExtractPkScriptAddrs(subScript,
 		chainParams)
@@ -169,8 +169,8 @@ func sign(chainParams *chaincfg.Params, tx *wire.MsgTx, idx int,
 // function with addresses, class and nrequired that do not match pkScript is
 // an error and results in undefined behaviour.
 func mergeScripts(chainParams *chaincfg.Params, tx *wire.MsgTx, idx int,
-	hashType SigHashType, amount btcutil.Amount, pkScript []byte,
-	class ScriptClass, addresses []btcutil.Address,
+	hashType SigHashType, amount cashutil.Amount, pkScript []byte,
+	class ScriptClass, addresses []cashutil.Address,
 	nRequired int, sigScript, prevScript []byte) []byte {
 
 	// TODO: the scripthash and multisig paths here are overly
@@ -238,7 +238,7 @@ func mergeScripts(chainParams *chaincfg.Params, tx *wire.MsgTx, idx int,
 // have come from other functions internally and thus are all consistent with
 // each other, behaviour is undefined if this contract is broken.
 func mergeMultiSig(tx *wire.MsgTx, idx int, hashType SigHashType,
-	amount btcutil.Amount, addresses []btcutil.Address,
+	amount cashutil.Amount, addresses []cashutil.Address,
 	nRequired int, pkScript, sigScript, prevScript []byte) []byte {
 
 	// This is an internal only function and we already parsed this script
@@ -308,7 +308,7 @@ sigLoop:
 			// All multisig addresses should be pubkey addresses
 			// it is an error to call this internal function with
 			// bad input.
-			pkaddr := addr.(*btcutil.AddressPubKey)
+			pkaddr := addr.(*cashutil.AddressPubKey)
 
 			pubKey := pkaddr.PubKey()
 
@@ -354,14 +354,14 @@ sigLoop:
 // KeyDB is an interface type provided to SignTxOutput, it encapsulates
 // any user state required to get the private keys for an address.
 type KeyDB interface {
-	GetKey(btcutil.Address) (*btcec.PrivateKey, bool, error)
+	GetKey(cashutil.Address) (*btcec.PrivateKey, bool, error)
 }
 
 // KeyClosure implements KeyDB with a closure.
-type KeyClosure func(btcutil.Address) (*btcec.PrivateKey, bool, error)
+type KeyClosure func(cashutil.Address) (*btcec.PrivateKey, bool, error)
 
 // GetKey implements KeyDB by returning the result of calling the closure.
-func (kc KeyClosure) GetKey(address btcutil.Address) (*btcec.PrivateKey,
+func (kc KeyClosure) GetKey(address cashutil.Address) (*btcec.PrivateKey,
 	bool, error) {
 	return kc(address)
 }
@@ -369,14 +369,14 @@ func (kc KeyClosure) GetKey(address btcutil.Address) (*btcec.PrivateKey,
 // ScriptDB is an interface type provided to SignTxOutput, it encapsulates any
 // user state required to get the scripts for an pay-to-script-hash address.
 type ScriptDB interface {
-	GetScript(btcutil.Address) ([]byte, error)
+	GetScript(cashutil.Address) ([]byte, error)
 }
 
 // ScriptClosure implements ScriptDB with a closure.
-type ScriptClosure func(btcutil.Address) ([]byte, error)
+type ScriptClosure func(cashutil.Address) ([]byte, error)
 
 // GetScript implements ScriptDB by returning the result of calling the closure.
-func (sc ScriptClosure) GetScript(address btcutil.Address) ([]byte, error) {
+func (sc ScriptClosure) GetScript(address cashutil.Address) ([]byte, error) {
 	return sc(address)
 }
 
@@ -388,7 +388,7 @@ func (sc ScriptClosure) GetScript(address btcutil.Address) ([]byte, error) {
 // will be merged in a type-dependent manner with the newly generated.
 // signature script.
 func SignTxOutput(chainParams *chaincfg.Params, tx *wire.MsgTx, idx int,
-	pkScript []byte, hashType SigHashType, amount btcutil.Amount, kdb KeyDB,
+	pkScript []byte, hashType SigHashType, amount cashutil.Amount, kdb KeyDB,
 	sdb ScriptDB, previousScript []byte) ([]byte, error) {
 
 	sigScript, class, addresses, nrequired, err := sign(chainParams, tx,

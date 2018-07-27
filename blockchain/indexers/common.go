@@ -11,9 +11,9 @@ import (
 	"encoding/binary"
 	"errors"
 
-	"github.com/btcsuite/btcd/blockchain"
-	"github.com/btcsuite/btcd/database"
-	"github.com/btcsuite/btcutil"
+	"github.com/bcext/gcash/blockchain"
+	"github.com/bcext/gcash/database"
+	"github.com/bcext/cashutil"
 )
 
 var (
@@ -54,13 +54,13 @@ type Indexer interface {
 	// main chain. The set of output spent within a block is also passed in
 	// so indexers can access the pevious output scripts input spent if
 	// required.
-	ConnectBlock(database.Tx, *btcutil.Block, []blockchain.SpentTxOut) error
+	ConnectBlock(database.Tx, *cashutil.Block, []blockchain.SpentTxOut) error
 
 	// DisconnectBlock is invoked when a block has been disconnected from
 	// the main chain. The set of outputs scripts that were spent within
 	// this block is also returned so indexers can clean up the prior index
 	// state for this block
-	DisconnectBlock(database.Tx, *btcutil.Block, []blockchain.SpentTxOut) error
+	DisconnectBlock(database.Tx, *cashutil.Block, []blockchain.SpentTxOut) error
 }
 
 // AssertError identifies an error that indicates an internal code consistency

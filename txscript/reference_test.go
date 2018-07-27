@@ -17,9 +17,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/btcsuite/btcd/chaincfg/chainhash"
-	"github.com/btcsuite/btcd/wire"
-	"github.com/btcsuite/btcutil"
+	"github.com/bcext/gcash/chaincfg/chainhash"
+	"github.com/bcext/gcash/wire"
+	"github.com/bcext/cashutil"
 )
 
 // scriptTestName returns a descriptive test name for the given reference script
@@ -327,7 +327,7 @@ func testScripts(t *testing.T, tests [][]interface{}, useSigCache bool) {
 		}
 
 		var (
-			inputAmt btcutil.Amount
+			inputAmt cashutil.Amount
 		)
 
 		// When the first field of the test data is a slice it contains
@@ -336,7 +336,7 @@ func testScripts(t *testing.T, tests [][]interface{}, useSigCache bool) {
 		if amount, ok := test[0].([]interface{}); ok {
 			amountOffset++
 			var err error
-			inputAmt, err = btcutil.NewAmount(amount[0].(float64))
+			inputAmt, err = cashutil.NewAmount(amount[0].(float64))
 			if err != nil {
 				t.Errorf("%s: can't parse input amt: %v",
 					name, err)
@@ -519,7 +519,7 @@ testloop:
 			continue
 		}
 
-		tx, err := btcutil.NewTxFromBytes(serializedTx)
+		tx, err := cashutil.NewTxFromBytes(serializedTx)
 		if err != nil {
 			t.Errorf("bad test (arg 2 not msgtx %v) %d: %v", err,
 				i, test)
@@ -679,7 +679,7 @@ testloop:
 			continue
 		}
 
-		tx, err := btcutil.NewTxFromBytes(serializedTx)
+		tx, err := cashutil.NewTxFromBytes(serializedTx)
 		if err != nil {
 			t.Errorf("bad test (arg 2 not msgtx %v) %d: %v", err,
 				i, test)
@@ -837,7 +837,7 @@ func TestCalcSignatureHash(t *testing.T) {
 
 		// signature_hash (regular)
 		hash := calcSignatureHash(parsedScript, hashType, &tx,
-			int(test[2].(float64)), btcutil.Amount(0),
+			int(test[2].(float64)), cashutil.Amount(0),
 			ScriptEnableSighashForkid)
 		expectedHash, _ := chainhash.NewHashFromStr(test[4].(string))
 		if !bytes.Equal(hash, expectedHash[:]) {
@@ -847,7 +847,7 @@ func TestCalcSignatureHash(t *testing.T) {
 
 		// signature_hash(no forkid)
 		hash = calcSignatureHash(parsedScript, hashType, &tx,
-			int(test[2].(float64)), btcutil.Amount(0), 0)
+			int(test[2].(float64)), cashutil.Amount(0), 0)
 
 		expectedHash, _ = chainhash.NewHashFromStr(test[5].(string))
 		if !bytes.Equal(hash, expectedHash[:]) {
@@ -857,7 +857,7 @@ func TestCalcSignatureHash(t *testing.T) {
 
 		// signature_hash(replay protected)
 		hash = calcSignatureHash(parsedScript, hashType, &tx,
-			int(test[2].(float64)), btcutil.Amount(0),
+			int(test[2].(float64)), cashutil.Amount(0),
 			ScriptEnableSighashForkid|ScriptEnableReplayProtection)
 
 		expectedHash, _ = chainhash.NewHashFromStr(test[6].(string))
@@ -870,7 +870,7 @@ func TestCalcSignatureHash(t *testing.T) {
 
 // CheckTransactionSanity performs some preliminary checks on a transaction to
 // ensure it is sane.  These checks are context free.
-func CheckTransactionSanity(tx *btcutil.Tx) error {
+func CheckTransactionSanity(tx *cashutil.Tx) error {
 	// A transaction must have at least one input.
 	msgTx := tx.MsgTx()
 	if len(msgTx.TxIn) == 0 {
@@ -905,10 +905,10 @@ func CheckTransactionSanity(tx *btcutil.Tx) error {
 				"value of %v", satoshi)
 			return errors.New(str)
 		}
-		if satoshi > btcutil.MaxSatoshi {
+		if satoshi > cashutil.MaxSatoshi {
 			str := fmt.Sprintf("transaction output value of %v is "+
 				"higher than max allowed value of %v", satoshi,
-				btcutil.MaxSatoshi)
+				cashutil.MaxSatoshi)
 			return errors.New(str)
 		}
 
@@ -919,14 +919,14 @@ func CheckTransactionSanity(tx *btcutil.Tx) error {
 		if totalSatoshi < 0 {
 			str := fmt.Sprintf("total value of all transaction "+
 				"outputs exceeds max allowed value of %v",
-				btcutil.MaxSatoshi)
+				cashutil.MaxSatoshi)
 			return errors.New(str)
 		}
-		if totalSatoshi > btcutil.MaxSatoshi {
+		if totalSatoshi > cashutil.MaxSatoshi {
 			str := fmt.Sprintf("total value of all transaction "+
 				"outputs is %v which is higher than max "+
 				"allowed value of %v", totalSatoshi,
-				btcutil.MaxSatoshi)
+				cashutil.MaxSatoshi)
 			return errors.New(str)
 		}
 	}

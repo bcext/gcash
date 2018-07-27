@@ -13,12 +13,12 @@ import (
 	"fmt"
 	"hash"
 
-	"github.com/btcsuite/btcutil"
+	"github.com/bcext/cashutil"
 	"golang.org/x/crypto/ripemd160"
 
-	"github.com/btcsuite/btcd/btcec"
-	"github.com/btcsuite/btcd/chaincfg/chainhash"
-	"github.com/btcsuite/btcd/wire"
+	"github.com/bcext/gcash/btcec"
+	"github.com/bcext/gcash/chaincfg/chainhash"
+	"github.com/bcext/gcash/wire"
 )
 
 // An opcode defines the information related to a txscript opcode.  opfunc, if
@@ -2112,7 +2112,7 @@ func opcodeCheckSig(op *parsedOpcode, vm *Engine) error {
 	// to sign itself.
 	subScript = removeOpcodeByData(subScript, fullSigBytes)
 
-	hash = calcSignatureHash(subScript, hashType, &vm.tx, vm.txIdx, btcutil.Amount(vm.inputAmount), vm.flags)
+	hash = calcSignatureHash(subScript, hashType, &vm.tx, vm.txIdx, cashutil.Amount(vm.inputAmount), vm.flags)
 
 	pubKey, err := btcec.ParsePubKey(pkBytes, btcec.S256())
 	if err != nil {
@@ -2363,7 +2363,7 @@ func opcodeCheckMultiSig(op *parsedOpcode, vm *Engine) error {
 
 		// Generate the signature hash based on the signature hash type.
 		var hash []byte
-		hash = calcSignatureHash(script, hashType, &vm.tx, vm.txIdx, btcutil.Amount(vm.inputAmount), vm.flags)
+		hash = calcSignatureHash(script, hashType, &vm.tx, vm.txIdx, cashutil.Amount(vm.inputAmount), vm.flags)
 
 		var valid bool
 		if vm.sigCache != nil {

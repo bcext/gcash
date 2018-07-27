@@ -8,8 +8,8 @@ package blockchain
 import (
 	"math"
 
-	"github.com/btcsuite/btcd/chaincfg/chainhash"
-	"github.com/btcsuite/btcutil"
+	"github.com/bcext/gcash/chaincfg/chainhash"
+	"github.com/bcext/cashutil"
 )
 
 // nextPowerOfTwo returns the next highest power of two from a given number if
@@ -67,7 +67,7 @@ func HashMerkleBranches(left *chainhash.Hash, right *chainhash.Hash) *chainhash.
 // are calculated by concatenating the left node with itself before hashing.
 // Since this function uses nodes that are pointers to the hashes, empty nodes
 // will be nil.
-func BuildMerkleTreeStore(transactions []*btcutil.Tx) []*chainhash.Hash {
+func BuildMerkleTreeStore(transactions []*cashutil.Tx) []*chainhash.Hash {
 	// Calculate how many entries are required to hold the binary merkle
 	// tree as a linear array and create an array of that size.
 	nextPoT := nextPowerOfTwo(len(transactions))

@@ -32,7 +32,7 @@ const (
 	ErrInvalidIndex
 
 	// ErrUnsupportedAddress is returned when a concrete type that
-	// implements a btcutil.Address is not a supported type.
+	// implements a cashutil.Address is not a supported type.
 	ErrUnsupportedAddress
 
 	// ErrNotMultisigScript is returned from CalcMultiSigStats when the

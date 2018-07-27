@@ -4,7 +4,7 @@
 
 package blockchain
 
-import "github.com/btcsuite/btcd/wire"
+import "github.com/bcext/gcash/wire"
 
 const (
 	// DefaultMaxBlockSize is the maximum number of bytes within a block
