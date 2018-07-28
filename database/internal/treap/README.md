@@ -1,7 +1,7 @@
 treap
 =====
 
-[![Build Status](https://travis-ci.org/btcsuite/btcd.png?branch=master)](https://travis-ci.org/btcsuite/btcd)
+[![Build Status](https://travis-ci.org/bcext/gcash.png?branch=master)](https://travis-ci.org/bcext/gcash)
 [![ISC License](http://img.shields.io/badge/license-ISC-blue.svg)](http://copyfree.org)
 [![GoDoc](https://godoc.org/github.com/bcext/gcash/database/internal/treap?status.png)](http://godoc.org/github.com/bcext/gcash/database/internal/treap)
 

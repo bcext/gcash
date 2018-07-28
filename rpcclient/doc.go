@@ -9,8 +9,8 @@ Overview
 
 This client provides a robust and easy to use client for interfacing with a
 Bitcoin RPC server that uses a btcd/bitcoin core compatible Bitcoin JSON-RPC
-API.  This client has been tested with btcd (https://github.com/bcext/gcash),
-btcwallet (https://github.com/btcsuite/btcwallet), and
+API.  This client has been tested with gcash (https://github.com/bcext/gcash),
+cashwallet (https://github.com/bcext/cashwallet), and
 bitcoin core (https://github.com/bitcoin).
 
 In addition to the compatible standard HTTP POST JSON-RPC API, btcd and
