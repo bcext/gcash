@@ -1,7 +1,7 @@
-btcd Websockets Example
+gcash Websockets Example
 =======================
 
-This example shows how to use the rpcclient package to connect to a btcd RPC
+This example shows how to use the rpcclient package to connect to a gcash RPC
 server using TLS-secured websockets, register for block connected and block
 disconnected notifications, and get the current block count.
 
