@@ -59,7 +59,7 @@ func (st SigHashType) hasAnyoneCanPay() bool {
 	return st&SigHashAnyOneCanPay != 0
 }
 
-func (st SigHashType) withForkId(forkID bool) SigHashType {
+func (st SigHashType) withForkID(forkID bool) SigHashType {
 	if forkID {
 		return st&(^SigHashForkID) | SigHashForkID
 	}

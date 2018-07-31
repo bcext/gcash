@@ -344,7 +344,7 @@ func CheckProofOfWork(block *cashutil.Block, powLimit *big.Int) error {
 	return checkProofOfWork(&block.MsgBlock().Header, powLimit, BFNone)
 }
 
-// CountSigOps returns the number of signature operations for all transaction
+// GetSigOpCost returns the number of signature operations for all transaction
 // input and output scripts in the provided transaction.  This uses the
 // quicker, but imprecise, signature operation counting mechanism from
 // txscript.
@@ -1104,11 +1104,11 @@ func (b *BlockChain) checkConnectBlock(node *blockNode, block *cashutil.Block, v
 	}
 
 	// DAA activated
-	if IsDAAEnabled(node, b.chainParams) {
+	if isDAAEnabled(node, b.chainParams) {
 		scriptFlags |= txscript.ScriptEnableSighashForkid
 	}
 
-	if IsMonolithEnabled(node, b.chainParams) {
+	if isMonolithEnabled(node, b.chainParams) {
 		scriptFlags |= txscript.ScriptEnableMonolith
 	}
 
@@ -1171,7 +1171,7 @@ func (b *BlockChain) CheckConnectBlockTemplate(block *cashutil.Block) error {
 	return b.checkConnectBlock(newNode, block, view, nil)
 }
 
-func IsDAAEnabled(currentNode *blockNode, params *chaincfg.Params) bool {
+func isDAAEnabled(currentNode *blockNode, params *chaincfg.Params) bool {
 	if currentNode == nil {
 		return false
 	}
@@ -1179,7 +1179,7 @@ func IsDAAEnabled(currentNode *blockNode, params *chaincfg.Params) bool {
 	return currentNode.height >= params.DAAHeight
 }
 
-func IsMonolithEnabled(currentNode *blockNode, params *chaincfg.Params) bool {
+func isMonolithEnabled(currentNode *blockNode, params *chaincfg.Params) bool {
 	if currentNode == nil {
 		return false
 	}

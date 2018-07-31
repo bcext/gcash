@@ -249,7 +249,7 @@ func parseExpectedResult(expected string) ([]ErrorCode, error) {
 	case "MINIMALIF":
 		return []ErrorCode{ErrScriptMinimalIf}, nil
 	case "ILLEGAL_FORKID":
-		return []ErrorCode{ErrScriptIllegalForkId}, nil
+		return []ErrorCode{ErrScriptIllegalForkID}, nil
 	case "SPLIT_RANGE":
 		return []ErrorCode{ErrInvalidSplitRange}, nil
 	case "INVALID_NUMBER_RANGE":

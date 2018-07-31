@@ -64,7 +64,7 @@ func TestErrorCodeStringer(t *testing.T) {
 		{ErrInvalidNumberRange, "ErrInvalidNumberRange"},
 		{ErrInvalidOperandSize, "ErrInvalidOperandSize"},
 		{ErrImpossibleEncoding, "ErrImpossibleEncoding"},
-		{ErrScriptIllegalForkId, "ErrScriptIllegalForkId"},
+		{ErrScriptIllegalForkID, "ErrScriptIllegalForkID"},
 		{ErrScriptMustUseForkid, "ErrScriptMustUseForkid"},
 		{ErrScriptDivByZero, "ErrScriptDivByZero"},
 		{ErrScriptModByZero, "ErrScriptModByZero"},

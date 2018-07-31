@@ -72,11 +72,11 @@ const (
 	// SFNodeXthin is a flag used to indicate a peer supports xthin blocks.
 	SFNodeXthin
 
-	// NODE_BITCOIN_CASH means the node supports Bitcoin Cash and the
+	// SFNodeBitcoinCash means the node supports Bitcoin Cash and the
 	// associated consensus rule changes.
 	// This service bit is intended to be used prior until some time after the
 	// UAHF activation when the Bitcoin Cash network has adequately separated.
-	// TODO: remove (free up) the NODE_BITCOIN_CASH service bit once no longer
+	// TODO: remove (free up) the SFNodeBitcoinCash service bit once no longer
 	// needed.
 	SFNodeBitcoinCash
 

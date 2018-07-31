@@ -235,7 +235,7 @@ const (
 	ErrImpossibleEncoding
 
 	ErrScriptMinimalIf
-	ErrScriptIllegalForkId
+	ErrScriptIllegalForkID
 
 	ErrScriptMustUseForkid
 
@@ -296,7 +296,7 @@ var errorCodeStrings = map[ErrorCode]string{
 	ErrInvalidNumberRange:       "ErrInvalidNumberRange",
 	ErrInvalidOperandSize:       "ErrInvalidOperandSize",
 	ErrImpossibleEncoding:       "ErrImpossibleEncoding",
-	ErrScriptIllegalForkId:      "ErrScriptIllegalForkId",
+	ErrScriptIllegalForkID:      "ErrScriptIllegalForkID",
 	ErrScriptMustUseForkid:      "ErrScriptMustUseForkid",
 	ErrScriptDivByZero:          "ErrScriptDivByZero",
 	ErrScriptModByZero:          "ErrScriptModByZero",

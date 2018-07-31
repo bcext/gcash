@@ -28,6 +28,9 @@ const (
 	MaxOutputsPerBlock = DefaultMaxBlockSize / wire.MinTxOutPayload
 )
 
+// GetMaxBlockSigOpsCount computes the maximum number of sigops operation that can
+// contained in a block given the block size as parameter. It is computed by multiplying
+// MaxBlockSigOpsPerMB by the size of the block in MB rounded up to the closest integer.
 func GetMaxBlockSigOpsCount(blocksize int) int {
 	mbRoundedUp := 1 + ((blocksize - 1) / OneMegaByte)
 	return mbRoundedUp * MaxBlockSigOpsPerMB

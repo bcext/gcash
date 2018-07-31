@@ -79,16 +79,18 @@ const (
 	// operand is anything other than empty vector or [0x01] non-standard.
 	ScriptVerifyMinimalIf
 
-	// Public keys in scripts must be compressed
+	// ScriptVerifyCompressedPubkey defines public keys in scripts must be
+	// compressed
 	ScriptVerifyCompressedPubkey
 
-	// Do we accept signature using SigHashForkID.
+	// ScriptEnableSighashForkid defines we accept signature using SigHashForkID.
 	ScriptEnableSighashForkid
 
-	// Do we accept activate replay protection using a different fork id.
+	// ScriptEnableReplayProtection defines we accept activate replay protection
+	// using a different fork id.
 	ScriptEnableReplayProtection
 
-	// Enable new opcodes.
+	// ScriptEnableMonolith enables some new opcodes.
 	ScriptEnableMonolith
 )
 
@@ -434,14 +436,14 @@ func (vm *Engine) checkHashTypeEncoding(hashType SigHashType) error {
 		return scriptError(ErrInvalidSigHashType, str)
 	}
 
-	usesForkId := hashType.hasForkID()
+	usesForkID := hashType.hasForkID()
 	forkIDEnabled := vm.hasFlag(ScriptEnableSighashForkid)
-	if !forkIDEnabled && usesForkId {
-		return scriptError(ErrScriptIllegalForkId,
+	if !forkIDEnabled && usesForkID {
+		return scriptError(ErrScriptIllegalForkID,
 			"sigHashForkid not enabled, but sig has the flag")
 	}
 
-	if forkIDEnabled && !usesForkId {
+	if forkIDEnabled && !usesForkID {
 		return scriptError(ErrScriptMustUseForkid,
 			"sigHashForkid enabled, but sig has not the flag")
 	}

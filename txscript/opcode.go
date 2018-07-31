@@ -2362,21 +2362,20 @@ func opcodeCheckMultiSig(op *parsedOpcode, vm *Engine) error {
 		}
 
 		// Generate the signature hash based on the signature hash type.
-		var hash []byte
-		hash = calcSignatureHash(script, hashType, &vm.tx, vm.txIdx, cashutil.Amount(vm.inputAmount), vm.flags)
+		h := calcSignatureHash(script, hashType, &vm.tx, vm.txIdx, cashutil.Amount(vm.inputAmount), vm.flags)
 
 		var valid bool
 		if vm.sigCache != nil {
 			var sigHash chainhash.Hash
-			copy(sigHash[:], hash)
+			copy(sigHash[:], h)
 
 			valid = vm.sigCache.Exists(sigHash, parsedSig, parsedPubKey)
-			if !valid && parsedSig.Verify(hash, parsedPubKey) {
+			if !valid && parsedSig.Verify(h, parsedPubKey) {
 				vm.sigCache.Add(sigHash, parsedSig, parsedPubKey)
 				valid = true
 			}
 		} else {
-			valid = parsedSig.Verify(hash, parsedPubKey)
+			valid = parsedSig.Verify(h, parsedPubKey)
 		}
 
 		if valid {

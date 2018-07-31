@@ -154,6 +154,7 @@ func CalcWork(bits uint32) *big.Int {
 	return new(big.Int).Div(oneLsh256, denominator)
 }
 
+// GetNextWorkRequired calculate the next block's difficulty needed
 func (b *BlockChain) GetNextWorkRequired(header *wire.BlockHeader) (uint32, error) {
 	prevBlock := b.bestChain.Tip()
 	// genesis block
@@ -167,7 +168,7 @@ func (b *BlockChain) GetNextWorkRequired(header *wire.BlockHeader) (uint32, erro
 		return prevBlock.bits, nil
 	}
 
-	if IsDAAEnabled(prevBlock, b.chainParams) {
+	if isDAAEnabled(prevBlock, b.chainParams) {
 		return b.getNextCashWorkRequired(prevBlock, header)
 	}
 
@@ -188,7 +189,7 @@ func (b *BlockChain) getNextCashWorkRequired(prevBlock *blockNode,
 	// If the new block's timestamp is more than 2* 10 minutes then allow
 	// mining of a min-difficulty block.
 	if b.chainParams.ReduceMinDifficulty &&
-		(int64(header.Timestamp.Unix()) >
+		(header.Timestamp.Unix() >
 			(prevBlock.timestamp + int64(2*b.chainParams.TargetTimePerBlock.Seconds()))) {
 		return b.chainParams.PowLimitBits, nil
 	}
@@ -304,7 +305,7 @@ func (b *BlockChain) calculateNextWorkRequired(prevNode *blockNode,
 
 	// Retarget
 	bnNew := CompactToBig(prevNode.bits)
-	bnNew.Mul(bnNew, big.NewInt(int64(actualTimeSpan)))
+	bnNew.Mul(bnNew, big.NewInt(actualTimeSpan))
 	bnNew.Div(bnNew, big.NewInt(targetTimeSpan))
 	if bnNew.Cmp(b.chainParams.PowLimit) > 0 {
 		bnNew = b.chainParams.PowLimit
@@ -340,7 +341,7 @@ func (b *BlockChain) computeTarget(indexFirst, indexLast *blockNode) *big.Int {
 		actualTimeSpan = 72 * interval
 	}
 
-	work.Div(work, big.NewInt(int64(actualTimeSpan)))
+	work.Div(work, big.NewInt(actualTimeSpan))
 	/**
 	 * We need to compute T = (2^256 / W) - 1 but 2^256 doesn't fit in 256 bits.
 	 * By expressing 1 as W / W, we get (2^256 - W) / W, and we can compute
@@ -378,6 +379,8 @@ func (b *BlockChain) getSuitableBlock(lastNode *blockNode) *blockNode {
 	return nodes[1]
 }
 
+// CheckProofOfWork Checks whether a block hash satisfies the proof-of-work
+// requirement specified by nBits
 func (b *BlockChain) CheckProofOfWork(hash *chainhash.Hash, bits uint32) bool {
 	target := CompactToBig(bits)
 	if target.Sign() <= 0 ||

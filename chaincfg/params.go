@@ -541,6 +541,8 @@ var SimNetParams = Params{
 	HDCoinType: 115, // ASCII for s
 }
 
+// DifficultyAdjustmentInterval returns the number of blocks for retargeting
+// difficulty
 func (param *Params) DifficultyAdjustmentInterval() int64 {
 	return int64(param.TargetTimespan / param.TargetTimePerBlock)
 }

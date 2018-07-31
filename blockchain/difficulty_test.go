@@ -153,7 +153,7 @@ func TestGetNextWork(t *testing.T) {
 	}
 }
 
-func GetBlockNode(prevNode *blockNode, timeInterval int64, bits uint32) *blockNode {
+func getBlockNode(prevNode *blockNode, timeInterval int64, bits uint32) *blockNode {
 	node := blockNode{
 		parent:    prevNode,
 		height:    prevNode.height + 1,
@@ -208,7 +208,7 @@ func TestRetarget(t *testing.T) {
 
 	// Pile up some blocks.
 	for i := 1; i < 100; i++ {
-		blocks[i] = GetBlockNode(blocks[i-1], int64(chain.chainParams.TargetTimePerBlock.Seconds()), initialBits)
+		blocks[i] = getBlockNode(blocks[i-1], int64(chain.chainParams.TargetTimePerBlock.Seconds()), initialBits)
 		header := blocks[i].Header()
 		AddBlockToChain(blocks, i, &header, chain)
 	}
@@ -217,7 +217,7 @@ func TestRetarget(t *testing.T) {
 	// matter as the MTP is not affected. For the next 5 block, MTP difference
 	// increases but stays below 12h.
 	for i := 100; i < 110; i++ {
-		blocks[i] = GetBlockNode(blocks[i-1], 2*3600, initialBits)
+		blocks[i] = getBlockNode(blocks[i-1], 2*3600, initialBits)
 		header = blocks[i].Header()
 		AddBlockToChain(blocks, i, &header, chain)
 
@@ -231,7 +231,7 @@ func TestRetarget(t *testing.T) {
 	}
 
 	// Now we expect the difficulty to decrease.
-	blocks[110] = GetBlockNode(blocks[109], 2*3600, initialBits)
+	blocks[110] = getBlockNode(blocks[109], 2*3600, initialBits)
 	currentPow = CompactToBig(BigToCompact(currentPow))
 	currentPow.Add(currentPow, new(big.Int).Rsh(currentPow, 2))
 	header = blocks[110].Header()
@@ -277,7 +277,7 @@ func TestCashDifficulty(t *testing.T) {
 	var i int
 	// Pile up some blocks every 10 mins to establish some history.
 	for i = 1; i < 2050; i++ {
-		blocks[i] = GetBlockNode(blocks[i-1], 600, initialBits)
+		blocks[i] = getBlockNode(blocks[i-1], 600, initialBits)
 		header := blocks[i].Header()
 		AddBlockToChain(blocks, i, &header, chain)
 	}
@@ -289,7 +289,7 @@ func TestCashDifficulty(t *testing.T) {
 
 	// Difficulty stays the same as long as we produce a block every 10 mins.
 	for j := 0; j < 10; j++ {
-		blocks[i] = GetBlockNode(blocks[i-1], 600, bits)
+		blocks[i] = getBlockNode(blocks[i-1], 600, bits)
 		header = blocks[i].Header()
 		AddBlockToChain(blocks, i, &header, chain)
 
@@ -307,7 +307,7 @@ func TestCashDifficulty(t *testing.T) {
 	// Make sure we skip over blocks that are out of wack. To do so, we produce
 	// a block that is far in the future, and then produce a block with the
 	// expected timestamp.
-	blocks[i] = GetBlockNode(blocks[i-1], 6000, bits)
+	blocks[i] = getBlockNode(blocks[i-1], 6000, bits)
 	header = blocks[i].Header()
 	AddBlockToChain(blocks, i, &header, chain)
 	powTarget, err := chain.getNextCashWorkRequired(blocks[i], nil)
@@ -319,7 +319,7 @@ func TestCashDifficulty(t *testing.T) {
 		t.Errorf("GetNextWorkRequired() calculates error, want: %d, but got: %d", bits, powTarget)
 	}
 
-	blocks[i] = GetBlockNode(blocks[i-1], 2*600-6000, bits)
+	blocks[i] = getBlockNode(blocks[i-1], 2*600-6000, bits)
 	header = blocks[i].Header()
 	AddBlockToChain(blocks, i, &header, chain)
 	powTarget, err = chain.getNextCashWorkRequired(blocks[i], nil)
@@ -334,7 +334,7 @@ func TestCashDifficulty(t *testing.T) {
 	// The system should continue unaffected by the block with a bogous
 	// timestamps.
 	for j := 0; j < 20; j++ {
-		blocks[i] = GetBlockNode(blocks[i-1], 600, bits)
+		blocks[i] = getBlockNode(blocks[i-1], 600, bits)
 		header = blocks[i].Header()
 		AddBlockToChain(blocks, i, &header, chain)
 		powTarget, err = chain.getNextCashWorkRequired(blocks[i], nil)
@@ -348,7 +348,7 @@ func TestCashDifficulty(t *testing.T) {
 	}
 
 	// We start emitting blocks slightly faster. The first block has no impact.
-	blocks[i] = GetBlockNode(blocks[i-1], 550, bits)
+	blocks[i] = getBlockNode(blocks[i-1], 550, bits)
 	header = blocks[i].Header()
 	AddBlockToChain(blocks, i, &header, chain)
 	powTarget, err = chain.getNextCashWorkRequired(blocks[i], nil)
@@ -362,7 +362,7 @@ func TestCashDifficulty(t *testing.T) {
 
 	// Now we should see difficulty increase slowly.
 	for j := 0; j < 10; j++ {
-		blocks[i] = GetBlockNode(blocks[i-1], 550, bits)
+		blocks[i] = getBlockNode(blocks[i-1], 550, bits)
 		header = blocks[i].Header()
 		AddBlockToChain(blocks, i, &header, chain)
 		nextBits, err := chain.getNextCashWorkRequired(blocks[i], nil)
@@ -393,7 +393,7 @@ func TestCashDifficulty(t *testing.T) {
 
 	// If we dramatically shorten block production, difficulty increases faster.
 	for j := 0; j < 20; j++ {
-		blocks[i] = GetBlockNode(blocks[i-1], 10, bits)
+		blocks[i] = getBlockNode(blocks[i-1], 10, bits)
 		header = blocks[i].Header()
 		AddBlockToChain(blocks, i, &header, chain)
 		nextBits, err := chain.getNextCashWorkRequired(blocks[i], nil)
@@ -424,7 +424,7 @@ func TestCashDifficulty(t *testing.T) {
 
 	// We start to emit blocks significantly slower. The first block has no
 	// impact.
-	blocks[i] = GetBlockNode(blocks[i-1], 6000, bits)
+	blocks[i] = getBlockNode(blocks[i-1], 6000, bits)
 	header = blocks[i].Header()
 	AddBlockToChain(blocks, i, &header, chain)
 	bits, err = chain.getNextCashWorkRequired(blocks[i], nil)
@@ -440,7 +440,7 @@ func TestCashDifficulty(t *testing.T) {
 
 	// If we dramatically slow down block production, difficulty decreases.
 	for j := 0; j < 93; j++ {
-		blocks[i] = GetBlockNode(blocks[i-1], 6000, bits)
+		blocks[i] = getBlockNode(blocks[i-1], 6000, bits)
 		header = blocks[i].Header()
 		AddBlockToChain(blocks, i, &header, chain)
 		nextBits, err := chain.getNextCashWorkRequired(blocks[i], nil)
@@ -475,7 +475,7 @@ func TestCashDifficulty(t *testing.T) {
 
 	// Due to the window of time being bounded, next block's difficulty actually
 	// gets harder.
-	blocks[i] = GetBlockNode(blocks[i-1], 6000, bits)
+	blocks[i] = getBlockNode(blocks[i-1], 6000, bits)
 	header = blocks[i].Header()
 	AddBlockToChain(blocks, i, &header, chain)
 	bits, err = chain.getNextCashWorkRequired(blocks[i], nil)
@@ -490,7 +490,7 @@ func TestCashDifficulty(t *testing.T) {
 	// And goes down again. It takes a while due to the window being bounded and
 	// the skewed block causes 2 blocks to get out of the window.
 	for j := 0; j < 192; j++ {
-		blocks[i] = GetBlockNode(blocks[i-1], 6000, bits)
+		blocks[i] = getBlockNode(blocks[i-1], 6000, bits)
 		header = blocks[i].Header()
 		AddBlockToChain(blocks, i, &header, chain)
 		nextBits, err := chain.getNextCashWorkRequired(blocks[i], nil)
@@ -526,7 +526,7 @@ func TestCashDifficulty(t *testing.T) {
 	// Once the difficulty reached the minimum allowed level, it doesn't get any
 	// easier.
 	for j := 0; j < 5; j++ {
-		blocks[i] = GetBlockNode(blocks[i-1], 6000, bits)
+		blocks[i] = getBlockNode(blocks[i-1], 6000, bits)
 		header = blocks[i].Header()
 		AddBlockToChain(blocks, i, &header, chain)
 		nextBits, err := chain.getNextCashWorkRequired(blocks[i], nil)
