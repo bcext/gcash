@@ -158,7 +158,7 @@ func TestBIP0113Activation(t *testing.T) {
 	tx.LockTime = uint32(chainInfo.MedianTime) + 1
 
 	sigScript, err := txscript.SignatureScript(tx, 0, testPkScript,
-		txscript.SigHashAll, outputKey, true)
+		outputValue, txscript.SigHashAll|txscript.SigHashForkID, outputKey, true)
 	if err != nil {
 		t.Fatalf("unable to generate sig: %v", err)
 	}
@@ -245,7 +245,7 @@ func TestBIP0113Activation(t *testing.T) {
 		})
 		tx.LockTime = uint32(medianTimePast + timeLockDelta)
 		sigScript, err = txscript.SignatureScript(tx, 0, testPkScript,
-			txscript.SigHashAll, outputKey, true)
+			outputValue, txscript.SigHashAll|txscript.SigHashForkID, outputKey, true)
 		if err != nil {
 			t.Fatalf("unable to generate sig: %v", err)
 		}
