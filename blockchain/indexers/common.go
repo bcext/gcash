@@ -11,9 +11,9 @@ import (
 	"encoding/binary"
 	"errors"
 
+	"github.com/bcext/cashutil"
 	"github.com/bcext/gcash/blockchain"
 	"github.com/bcext/gcash/database"
-	"github.com/bcext/cashutil"
 )
 
 var (

@@ -10,8 +10,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/bcext/gcash/rpcclient"
 	"github.com/bcext/cashutil"
+	"github.com/bcext/gcash/rpcclient"
 	"github.com/davecgh/go-spew/spew"
 )
 

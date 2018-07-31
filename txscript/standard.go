@@ -8,8 +8,8 @@ package txscript
 import (
 	"fmt"
 
-	"github.com/bcext/gcash/chaincfg"
 	"github.com/bcext/cashutil"
+	"github.com/bcext/gcash/chaincfg"
 )
 
 const (

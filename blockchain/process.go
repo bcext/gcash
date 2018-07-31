@@ -9,9 +9,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/bcext/cashutil"
 	"github.com/bcext/gcash/chaincfg/chainhash"
 	"github.com/bcext/gcash/database"
-	"github.com/bcext/cashutil"
 )
 
 // BehaviorFlags is a bitmask defining tweaks to the normal behavior when

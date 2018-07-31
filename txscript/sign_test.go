@@ -10,11 +10,11 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/bcext/cashutil"
 	"github.com/bcext/gcash/btcec"
 	"github.com/bcext/gcash/chaincfg"
 	"github.com/bcext/gcash/chaincfg/chainhash"
 	"github.com/bcext/gcash/wire"
-	"github.com/bcext/cashutil"
 )
 
 type addressToKey struct {

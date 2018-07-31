@@ -13,6 +13,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/bcext/cashutil"
 	"github.com/bcext/gcash/blockchain"
 	"github.com/bcext/gcash/blockchain/indexers"
 	"github.com/bcext/gcash/btcjson"
@@ -21,7 +22,6 @@ import (
 	"github.com/bcext/gcash/mining"
 	"github.com/bcext/gcash/txscript"
 	"github.com/bcext/gcash/wire"
-	"github.com/bcext/cashutil"
 )
 
 const (

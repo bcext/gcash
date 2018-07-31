@@ -10,11 +10,11 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/bcext/cashutil"
 	"github.com/bcext/gcash/chaincfg"
 	"github.com/bcext/gcash/database"
 	_ "github.com/bcext/gcash/database/ffldb"
 	"github.com/bcext/gcash/wire"
-	"github.com/bcext/cashutil"
 )
 
 // This example demonstrates creating a new database.

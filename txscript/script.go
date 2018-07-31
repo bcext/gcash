@@ -11,9 +11,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/bcext/cashutil"
 	"github.com/bcext/gcash/chaincfg/chainhash"
 	"github.com/bcext/gcash/wire"
-	"github.com/bcext/cashutil"
 )
 
 // Bip16Activation is the timestamp where BIP0016 is valid to use in the

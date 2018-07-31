@@ -5,13 +5,13 @@
 package netsync
 
 import (
+	"github.com/bcext/cashutil"
 	"github.com/bcext/gcash/blockchain"
 	"github.com/bcext/gcash/chaincfg"
 	"github.com/bcext/gcash/chaincfg/chainhash"
 	"github.com/bcext/gcash/mempool"
 	"github.com/bcext/gcash/peer"
 	"github.com/bcext/gcash/wire"
-	"github.com/bcext/cashutil"
 )
 
 // PeerNotifier exposes methods to notify peers of status changes to

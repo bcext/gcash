@@ -11,9 +11,9 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/bcext/cashutil"
 	"github.com/bcext/gcash/txscript"
 	"github.com/bcext/gcash/wire"
-	"github.com/bcext/cashutil"
 )
 
 // txValidateItem holds a transaction along with which input to validate.

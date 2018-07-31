@@ -9,10 +9,10 @@ import (
 	"encoding/hex"
 	"encoding/json"
 
+	"github.com/bcext/cashutil"
 	"github.com/bcext/gcash/btcjson"
 	"github.com/bcext/gcash/chaincfg/chainhash"
 	"github.com/bcext/gcash/wire"
-	"github.com/bcext/cashutil"
 )
 
 // SigHashType enumerates the available signature hashing types that the

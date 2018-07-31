@@ -17,9 +17,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/bcext/cashutil"
 	"github.com/bcext/gcash/chaincfg/chainhash"
 	"github.com/bcext/gcash/wire"
-	"github.com/bcext/cashutil"
 )
 
 // scriptTestName returns a descriptive test name for the given reference script

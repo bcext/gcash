@@ -12,10 +12,10 @@ import (
 	"runtime"
 	"testing"
 
+	"github.com/bcext/cashutil"
 	"github.com/bcext/gcash/chaincfg"
 	"github.com/bcext/gcash/database"
 	"github.com/bcext/gcash/database/ffldb"
-	"github.com/bcext/cashutil"
 )
 
 // dbType is the database type name for this driver.

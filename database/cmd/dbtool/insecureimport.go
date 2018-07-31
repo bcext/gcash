@@ -12,10 +12,10 @@ import (
 	"sync"
 	"time"
 
+	"github.com/bcext/cashutil"
 	"github.com/bcext/gcash/chaincfg/chainhash"
 	"github.com/bcext/gcash/database"
 	"github.com/bcext/gcash/wire"
-	"github.com/bcext/cashutil"
 )
 
 // importCmd defines the configuration options for the insecureimport command.

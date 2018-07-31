@@ -14,11 +14,11 @@ import (
 	"sort"
 	"sync"
 
+	"github.com/bcext/cashutil"
 	"github.com/bcext/gcash/chaincfg/chainhash"
 	"github.com/bcext/gcash/database"
 	"github.com/bcext/gcash/database/internal/treap"
 	"github.com/bcext/gcash/wire"
-	"github.com/bcext/cashutil"
 	"github.com/btcsuite/goleveldb/leveldb"
 	"github.com/btcsuite/goleveldb/leveldb/comparer"
 	ldberrors "github.com/btcsuite/goleveldb/leveldb/errors"

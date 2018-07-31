@@ -7,11 +7,11 @@ package blockchain
 import (
 	"fmt"
 
+	"github.com/bcext/cashutil"
 	"github.com/bcext/gcash/chaincfg/chainhash"
 	"github.com/bcext/gcash/database"
 	"github.com/bcext/gcash/txscript"
 	"github.com/bcext/gcash/wire"
-	"github.com/bcext/cashutil"
 )
 
 // txoFlags is a bitmask defining additional information and state for a

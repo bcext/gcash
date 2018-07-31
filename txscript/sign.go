@@ -9,10 +9,10 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/bcext/cashutil"
 	"github.com/bcext/gcash/btcec"
 	"github.com/bcext/gcash/chaincfg"
 	"github.com/bcext/gcash/wire"
-	"github.com/bcext/cashutil"
 )
 
 // RawTxInSignature returns the serialized ECDSA signature for the input idx of

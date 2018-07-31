@@ -9,10 +9,10 @@ import (
 	"math/rand"
 	"testing"
 
+	"github.com/bcext/cashutil"
 	"github.com/bcext/gcash/chaincfg/chainhash"
 	"github.com/bcext/gcash/mining"
 	"github.com/bcext/gcash/wire"
-	"github.com/bcext/cashutil"
 )
 
 // newTestFeeEstimator creates a feeEstimator with some different parameters

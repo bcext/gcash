@@ -9,9 +9,9 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/bcext/cashutil"
 	"github.com/bcext/gcash/chaincfg"
 	"github.com/bcext/gcash/database"
-	"github.com/bcext/cashutil"
 )
 
 // BenchmarkBlockHeader benchmarks how long it takes to load the mainnet genesis

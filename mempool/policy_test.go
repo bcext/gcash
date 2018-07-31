@@ -10,21 +10,21 @@ import (
 	"testing"
 	"time"
 
+	"github.com/bcext/cashutil"
 	"github.com/bcext/gcash/btcec"
 	"github.com/bcext/gcash/chaincfg"
 	"github.com/bcext/gcash/chaincfg/chainhash"
 	"github.com/bcext/gcash/txscript"
 	"github.com/bcext/gcash/wire"
-	"github.com/bcext/cashutil"
 )
 
 // TestCalcMinRequiredTxRelayFee tests the calcMinRequiredTxRelayFee API.
 func TestCalcMinRequiredTxRelayFee(t *testing.T) {
 	tests := []struct {
-		name     string         // test description.
-		size     int64          // Transaction size in bytes.
+		name     string          // test description.
+		size     int64           // Transaction size in bytes.
 		relayFee cashutil.Amount // minimum relay transaction fee.
-		want     int64          // Expected fee.
+		want     int64           // Expected fee.
 	}{
 		{
 			// Ensure combination of size and fee that are less than 1000

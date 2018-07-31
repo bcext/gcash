@@ -9,12 +9,12 @@ import (
 	"encoding/hex"
 	"fmt"
 
+	"github.com/bcext/cashutil"
 	"github.com/bcext/gcash/btcec"
 	"github.com/bcext/gcash/chaincfg"
 	"github.com/bcext/gcash/chaincfg/chainhash"
 	"github.com/bcext/gcash/txscript"
 	"github.com/bcext/gcash/wire"
-	"github.com/bcext/cashutil"
 )
 
 // This example demonstrates creating a script which pays to a bitcoin address.

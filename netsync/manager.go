@@ -12,6 +12,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/bcext/cashutil"
 	"github.com/bcext/gcash/blockchain"
 	"github.com/bcext/gcash/chaincfg"
 	"github.com/bcext/gcash/chaincfg/chainhash"
@@ -19,7 +20,6 @@ import (
 	"github.com/bcext/gcash/mempool"
 	peerpkg "github.com/bcext/gcash/peer"
 	"github.com/bcext/gcash/wire"
-	"github.com/bcext/cashutil"
 )
 
 const (

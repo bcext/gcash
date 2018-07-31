@@ -9,9 +9,9 @@ import (
 	"encoding/json"
 	"errors"
 
+	"github.com/bcext/cashutil"
 	"github.com/bcext/gcash/btcjson"
 	"github.com/bcext/gcash/chaincfg/chainhash"
-	"github.com/bcext/cashutil"
 )
 
 // FutureGenerateResult is a future promise to deliver the result of a

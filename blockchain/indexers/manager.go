@@ -8,11 +8,11 @@ import (
 	"bytes"
 	"fmt"
 
+	"github.com/bcext/cashutil"
 	"github.com/bcext/gcash/blockchain"
 	"github.com/bcext/gcash/chaincfg/chainhash"
 	"github.com/bcext/gcash/database"
 	"github.com/bcext/gcash/wire"
-	"github.com/bcext/cashutil"
 )
 
 var (

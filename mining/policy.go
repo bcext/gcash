@@ -6,9 +6,9 @@
 package mining
 
 import (
+	"github.com/bcext/cashutil"
 	"github.com/bcext/gcash/blockchain"
 	"github.com/bcext/gcash/wire"
-	"github.com/bcext/cashutil"
 )
 
 const (

@@ -7,14 +7,14 @@ package indexers
 import (
 	"errors"
 
+	"github.com/bcext/cashutil"
+	"github.com/bcext/cashutil/gcs"
+	"github.com/bcext/cashutil/gcs/builder"
 	"github.com/bcext/gcash/blockchain"
 	"github.com/bcext/gcash/chaincfg"
 	"github.com/bcext/gcash/chaincfg/chainhash"
 	"github.com/bcext/gcash/database"
 	"github.com/bcext/gcash/wire"
-	"github.com/bcext/cashutil"
-	"github.com/bcext/cashutil/gcs"
-	"github.com/bcext/cashutil/gcs/builder"
 )
 
 const (
