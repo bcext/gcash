@@ -6,7 +6,7 @@
         2. [Linux/BSD/MacOSX/POSIX](#PosixInstallation)
           1. [Gentoo Linux](#GentooInstallation)
     2. [Configuration](#Configuration)
-    3. [Controlling and Querying btcd via btcctl](#BtcctlConfig)
+    3. [Controlling and Querying gcash via gctl](#BtcctlConfig)
     4. [Mining](#Mining)
 3. [Help](#Help)
     1. [Startup](#Startup)
@@ -25,7 +25,7 @@
 
 ### 1. About
 
-btcd is a full node bitcoin implementation written in [Go](http://golang.org),
+gcash is a full node bitcoin implementation written in [Go](http://golang.org),
 licensed under the [copyfree](http://www.copyfree.org) ISC License.
 
 This project is currently under active development and is in a Beta state.  It
@@ -33,7 +33,7 @@ is extremely stable and has been in production use since October 2013.
 
 It properly downloads, validates, and serves the block chain using the exact
 rules (including consensus bugs) for block acceptance as Bitcoin Core.  We have
-taken great care to avoid btcd causing a fork to the block chain.  It includes a
+taken great care to avoid gcash causing a fork to the block chain.  It includes a
 full block validation testing framework which contains all of the 'official'
 block acceptance tests (and some additional ones) that is run on every pull
 request to help ensure it properly follows consensus.  Also, it passes all of
@@ -45,11 +45,11 @@ ensures all individual transactions admitted to the pool follow the rules
 required by the block chain and also includes more strict checks which filter
 transactions based on miner requirements ("standard" transactions).
 
-One key difference between btcd and Bitcoin Core is that btcd does *NOT* include
+One key difference between gcash and Bitcoin Core is that gcash does *NOT* include
 wallet functionality and this was a very intentional design decision.  See the
 blog entry [here](https://blog.conformal.com/btcd-not-your-moms-bitcoin-daemon)
 for more details.  This means you can't actually make or receive payments
-directly with btcd.  That functionality is provided by the
+directly with gcash.  That functionality is provided by the
 [cashwallet](https://github.com/bcext/cashwallet) and
 [Paymetheus](https://github.com/btcsuite/Paymetheus) (Windows-only) projects
 which are both under active development.
@@ -62,7 +62,7 @@ which are both under active development.
 
 **2.1 Installation**
 
-The first step is to install btcd.  See one of the following sections for
+The first step is to install gcash.  See one of the following sections for
 details on how to install on the supported operating systems.
 
 <a name="WindowsInstallation" />
@@ -70,7 +70,7 @@ details on how to install on the supported operating systems.
 **2.1.1 Windows Installation**<br />
 
 * Install the MSI available at: https://github.com/bcext/gcash/releases
-* Launch btcd from the Start Menu
+* Launch gcash from the Start Menu
 
 <a name="PosixInstallation" />
 
@@ -92,7 +92,7 @@ recommended that `GOPATH` is set to a directory in your home directory such as
 `~/goprojects` to avoid write permission issues.  It is also recommended to add
 `$GOPATH/bin` to your `PATH` at this point.
 
-- Run the following commands to obtain btcd, all dependencies, and install it:
+- Run the following commands to obtain gcash, all dependencies, and install it:
 
 ```bash
 $ go get -u github.com/Masterminds/glide
@@ -102,13 +102,13 @@ $ glide install
 $ go install . ./cmd/...
 ```
 
-- btcd (and utilities) will now be installed in ```$GOPATH/bin```.  If you did
+- gcash (and utilities) will now be installed in ```$GOPATH/bin```.  If you did
   not already add the bin directory to your system path during Go installation,
   we recommend you do so now.
 
 **Updating**
 
-- Run the following commands to update btcd, all dependencies, and install it:
+- Run the following commands to update gcash, all dependencies, and install it:
 
 ```bash
 $ cd $GOPATH/src/github.com/bcext/gcash
@@ -123,25 +123,25 @@ $ go install . ./cmd/...
 * Install Layman and enable the Bitcoin overlay.
   * https://gitlab.com/bitcoin/gentoo
 * Copy or symlink `/var/lib/layman/bitcoin/Documentation/package.keywords/btcd-live` to `/etc/portage/package.keywords/`
-* Install btcd: `$ emerge net-p2p/btcd`
+* Install gcash: `$ emerge net-p2p/gcash`
 
 <a name="Configuration" />
 
 **2.2 Configuration**
 
-btcd has a number of [configuration](http://godoc.org/github.com/bcext/gcash)
-options, which can be viewed by running: `$ btcd --help`.
+gcash has a number of [configuration](http://godoc.org/github.com/bcext/gcash)
+options, which can be viewed by running: `$ gcash --help`.
 
 <a name="BtcctlConfig" />
 
-**2.3 Controlling and Querying btcd via btcctl**
+**2.3 Controlling and Querying gcash via gctl**
 
-btcctl is a command line utility that can be used to both control and query btcd
-via [RPC](http://www.wikipedia.org/wiki/Remote_procedure_call).  btcd does
+gctl is a command line utility that can be used to both control and query gcash
+via [RPC](http://www.wikipedia.org/wiki/Remote_procedure_call).  gcash does
 **not** enable its RPC server by default;  You must configure at minimum both an
 RPC username and password or both an RPC limited username and password:
 
-* btcd.conf configuration file
+* gcash.conf configuration file
 ```
 [Application Options]
 rpcuser=myuser
@@ -149,7 +149,7 @@ rpcpass=SomeDecentp4ssw0rd
 rpclimituser=mylimituser
 rpclimitpass=Limitedp4ssw0rd
 ```
-* btcctl.conf configuration file
+* gctl.conf configuration file
 ```
 [Application Options]
 rpcuser=myuser
@@ -161,13 +161,13 @@ OR
 rpclimituser=mylimituser
 rpclimitpass=Limitedp4ssw0rd
 ```
-For a list of available options, run: `$ btcctl --help`
+For a list of available options, run: `$ gctl --help`
 
 <a name="Mining" />
 
 **2.4 Mining**
 
-btcd supports the `getblocktemplate` RPC.
+gcash supports the `getblocktemplate` RPC.
 The limited user cannot access this RPC.
 
 
@@ -181,16 +181,16 @@ miningaddr=12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX
 miningaddr=1M83ju3EChKYyysmM2FXtLNftbacagd8FR
 ```
 
-**2. Add btcd's RPC TLS certificate to system Certificate Authority list.**
+**2. Add gcash's RPC TLS certificate to system Certificate Authority list.**
 
 `cgminer` uses [curl](http://curl.haxx.se/) to fetch data from the RPC server.
-Since curl validates the certificate by default, we must install the `btcd` RPC
+Since curl validates the certificate by default, we must install the `gcash` RPC
 certificate into the default system Certificate Authority list.
 
 **Ubuntu**
 
-1. Copy rpc.cert to /usr/share/ca-certificates: `# cp /home/user/.btcd/rpc.cert /usr/share/ca-certificates/btcd.crt`
-2. Add btcd.crt to /etc/ca-certificates.conf: `# echo btcd.crt >> /etc/ca-certificates.conf`
+1. Copy rpc.cert to /usr/share/ca-certificates: `# cp /home/user/.gcash/rpc.cert /usr/share/ca-certificates/gcash.crt`
+2. Add gcash.crt to /etc/ca-certificates.conf: `# echo gcash.crt >> /etc/ca-certificates.conf`
 3. Update the CA certificate list: `# update-ca-certificates`
 
 **3. Set your mining software url to use https.**
@@ -205,7 +205,7 @@ certificate into the default system Certificate Authority list.
 
 **3.1 Startup**
 
-Typically btcd will run and start downloading the block chain with no extra
+Typically gcash will run and start downloading the block chain with no extra
 configuration necessary, however, there is an optional method to use a
 `bootstrap.dat` file that may speed up the initial block chain download process.
 
@@ -222,13 +222,13 @@ configuration necessary, however, there is an optional method to use a
 * [What Ports Are Used by Default?](https://github.com/bcext/gcash/tree/master/docs/default_ports.md)
 * [How To Listen on Specific Interfaces](https://github.com/bcext/gcash/tree/master/docs/configure_peer_server_listen_interfaces.md)
 * [How To Configure RPC Server to Listen on Specific Interfaces](https://github.com/bcext/gcash/tree/master/docs/configure_rpc_server_listen_interfaces.md)
-* [Configuring btcd with Tor](https://github.com/bcext/gcash/tree/master/docs/configuring_tor.md)
+* [Configuring gcash with Tor](https://github.com/bcext/gcash/tree/master/docs/configuring_tor.md)
 
 <a name="Wallet" />
 
 **3.1 Wallet**
 
-btcd was intentionally developed without an integrated wallet for security
+gcash was intentionally developed without an integrated wallet for security
 reasons.  Please see [cashwallet](https://github.com/bcext/casbwallet) for more
 information.
 
@@ -241,15 +241,15 @@ information.
 
 **4.1 IRC**
 
-* [irc.freenode.net](irc://irc.freenode.net), channel `#btcd`
+* [irc.freenode.net](irc://irc.freenode.net), channel `#gcash`
 
 <a name="MailingLists" />
 
 **4.2 Mailing Lists**
 
-* <a href="mailto:btcd+subscribe@opensource.conformal.com">btcd</a>: discussion
-  of btcd and its packages.
-* <a href="mailto:btcd-commits+subscribe@opensource.conformal.com">btcd-commits</a>:
+* <a href="mailto:gcash+subscribe@opensource.conformal.com">gcash</a>: discussion
+  of gcash and its packages.
+* <a href="mailto:gcash-commits+subscribe@opensource.conformal.com">gcash-commits</a>:
   readonly mail-out of source code changes.
 
 <a name="DeveloperResources" />

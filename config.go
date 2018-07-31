@@ -21,6 +21,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/bcext/cashutil"
 	"github.com/bcext/gcash/blockchain"
 	"github.com/bcext/gcash/chaincfg"
 	"github.com/bcext/gcash/chaincfg/chainhash"
@@ -28,17 +29,16 @@ import (
 	"github.com/bcext/gcash/database"
 	_ "github.com/bcext/gcash/database/ffldb"
 	"github.com/bcext/gcash/mempool"
-	"github.com/bcext/cashutil"
 	"github.com/btcsuite/go-socks/socks"
 	"github.com/jessevdk/go-flags"
 )
 
 const (
-	defaultConfigFilename        = "btcd.conf"
+	defaultConfigFilename        = "gcash.conf"
 	defaultDataDirname           = "data"
 	defaultLogLevel              = "info"
 	defaultLogDirname            = "logs"
-	defaultLogFilename           = "btcd.log"
+	defaultLogFilename           = "gcash.log"
 	defaultMaxPeers              = 125
 	defaultBanDuration           = time.Hour * 24
 	defaultBanThreshold          = 100
@@ -54,13 +54,13 @@ const (
 	defaultMaxOrphanTransactions = 100
 	defaultMaxOrphanTxSize       = 100000
 	defaultSigCacheMaxSize       = 100000
-	sampleConfigFilename         = "sample-btcd.conf"
+	sampleConfigFilename         = "sample-gcash.conf"
 	defaultTxIndex               = false
 	defaultAddrIndex             = false
 )
 
 var (
-	defaultHomeDir     = cashutil.AppDataDir("btcd", false)
+	defaultHomeDir     = cashutil.AppDataDir("gcash", false)
 	defaultConfigFile  = filepath.Join(defaultHomeDir, defaultConfigFilename)
 	defaultDataDir     = filepath.Join(defaultHomeDir, defaultDataDirname)
 	knownDbTypes       = database.SupportedDrivers()
@@ -82,7 +82,7 @@ func minUint32(a, b uint32) uint32 {
 	return b
 }
 
-// config defines the configuration options for btcd.
+// config defines the configuration options for gcash.
 //
 // See loadConfig for details on the configuration load process.
 type config struct {
@@ -387,7 +387,7 @@ func newConfigParser(cfg *config, so *serviceOptions, options flags.Options) *fl
 // 	3) Load configuration file overwriting defaults with any specified options
 // 	4) Parse CLI options and overwrite/add any specified options
 //
-// The above results in btcd functioning properly without any config settings
+// The above results in gcash functioning properly without any config settings
 // while still allowing the user to override settings with config files and
 // command line options.  Command line options always take precedence.
 func loadConfig() (*config, []string, error) {
@@ -714,7 +714,7 @@ func loadConfig() (*config, []string, error) {
 	}
 
 	if cfg.DisableRPC {
-		btcdLog.Infof("RPC service is disabled")
+		cashLog.Infof("RPC service is disabled")
 	}
 
 	// Default RPC to listen on localhost only.
@@ -1047,13 +1047,13 @@ func loadConfig() (*config, []string, error) {
 	// done.  This prevents the warning on help messages and invalid
 	// options.  Note this should go directly before the return.
 	if configFileError != nil {
-		btcdLog.Warnf("%v", configFileError)
+		cashLog.Warnf("%v", configFileError)
 	}
 
 	return &cfg, remainingArgs, nil
 }
 
-// createDefaultConfig copies the file sample-btcd.conf to the given destination path,
+// createDefaultConfig copies the file sample-gcash.conf to the given destination path,
 // and populates it with some randomly generated RPC username and password.
 func createDefaultConfigFile(destinationPath string) error {
 	// Create the destination directory if it does not exists
@@ -1120,12 +1120,12 @@ func createDefaultConfigFile(destinationPath string) error {
 	return nil
 }
 
-// btcdDial connects to the address on the named network using the appropriate
+// gcashDial connects to the address on the named network using the appropriate
 // dial function depending on the address and configuration options.  For
 // example, .onion addresses will be dialed using the onion specific proxy if
 // one was specified, but will otherwise use the normal dial function (which
 // could itself use a proxy or not).
-func btcdDial(addr net.Addr) (net.Conn, error) {
+func gcashDial(addr net.Addr) (net.Conn, error) {
 	if strings.Contains(addr.String(), ".onion:") {
 		return cfg.oniondial(addr.Network(), addr.String(),
 			defaultConnectTimeout)
@@ -1133,14 +1133,14 @@ func btcdDial(addr net.Addr) (net.Conn, error) {
 	return cfg.dial(addr.Network(), addr.String(), defaultConnectTimeout)
 }
 
-// btcdLookup resolves the IP of the given host using the correct DNS lookup
+// gcashLookup resolves the IP of the given host using the correct DNS lookup
 // function depending on the configuration options.  For example, addresses will
 // be resolved using tor when the --proxy flag was specified unless --noonion
 // was also specified in which case the normal system DNS resolver will be used.
 //
 // Any attempt to resolve a tor address (.onion) will return an error since they
 // are not intended to be resolved outside of the tor proxy.
-func btcdLookup(host string) ([]net.IP, error) {
+func gcashLookup(host string) ([]net.IP, error) {
 	if strings.HasSuffix(host, ".onion") {
 		return nil, fmt.Errorf("attempt to resolve tor address %s", host)
 	}

@@ -22,6 +22,7 @@ import (
 
 	"golang.org/x/crypto/ripemd160"
 
+	"github.com/bcext/cashutil"
 	"github.com/bcext/gcash/blockchain"
 	"github.com/bcext/gcash/btcjson"
 	"github.com/bcext/gcash/chaincfg"
@@ -29,7 +30,6 @@ import (
 	"github.com/bcext/gcash/database"
 	"github.com/bcext/gcash/txscript"
 	"github.com/bcext/gcash/wire"
-	"github.com/bcext/cashutil"
 	"github.com/btcsuite/websocket"
 )
 
@@ -2615,7 +2615,7 @@ fetchRange:
 		minBlock += int32(len(hashList))
 	}
 
-	// Notify websocket client of the finished rescan.  Due to how btcd
+	// Notify websocket client of the finished rescan.  Due to how gcash
 	// asynchronously queues notifications to not block calling code,
 	// there is no guarantee that any of the notifications created during
 	// rescan (such as rescanprogress, recvtx and redeemingtx) will be

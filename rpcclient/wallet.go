@@ -9,11 +9,11 @@ import (
 	"encoding/json"
 	"strconv"
 
+	"github.com/bcext/cashutil"
 	"github.com/bcext/gcash/btcjson"
 	"github.com/bcext/gcash/chaincfg"
 	"github.com/bcext/gcash/chaincfg/chainhash"
 	"github.com/bcext/gcash/wire"
-	"github.com/bcext/cashutil"
 )
 
 // *****************************
@@ -2150,7 +2150,7 @@ func (c *Client) ImportPubKeyRescan(pubKey string, rescan bool) error {
 // Miscellaneous Functions
 // ***********************
 
-// NOTE: While getinfo is implemented here (in wallet.go), a btcd chain server
+// NOTE: While getinfo is implemented here (in wallet.go), a gcash chain server
 // will respond to getinfo requests as well, excluding any wallet information.
 
 // FutureGetInfoResult is a future promise to deliver the result of a

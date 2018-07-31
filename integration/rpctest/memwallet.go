@@ -11,6 +11,8 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/bcext/cashutil"
+	"github.com/bcext/cashutil/hdkeychain"
 	"github.com/bcext/gcash/blockchain"
 	"github.com/bcext/gcash/btcec"
 	"github.com/bcext/gcash/chaincfg"
@@ -18,8 +20,6 @@ import (
 	"github.com/bcext/gcash/rpcclient"
 	"github.com/bcext/gcash/txscript"
 	"github.com/bcext/gcash/wire"
-	"github.com/bcext/cashutil"
-	"github.com/bcext/cashutil/hdkeychain"
 )
 
 var (
@@ -171,7 +171,7 @@ func (m *memWallet) SyncedHeight() int32 {
 	return m.currentHeight
 }
 
-// SetRPCClient saves the passed rpc connection to btcd as the wallet's
+// SetRPCClient saves the passed rpc connection to gcash as the wallet's
 // personal rpc connection.
 func (m *memWallet) SetRPCClient(rpcClient *rpcclient.Client) {
 	m.rpc = rpcClient

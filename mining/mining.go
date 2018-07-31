@@ -10,12 +10,12 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/bcext/cashutil"
 	"github.com/bcext/gcash/blockchain"
 	"github.com/bcext/gcash/chaincfg"
 	"github.com/bcext/gcash/chaincfg/chainhash"
 	"github.com/bcext/gcash/txscript"
 	"github.com/bcext/gcash/wire"
-	"github.com/bcext/cashutil"
 )
 
 const (
@@ -29,7 +29,7 @@ const (
 
 	// CoinbaseFlags is added to the coinbase script of a generated block
 	// and is used to monitor BIP16 support as well as blocks that are
-	// generated via btcd.
+	// generated via gcash.
 	CoinbaseFlags = "/P2SH/btcd/"
 )
 

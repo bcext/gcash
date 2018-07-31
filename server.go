@@ -23,6 +23,8 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/bcext/cashutil"
+	"github.com/bcext/cashutil/bloom"
 	"github.com/bcext/gcash/addrmgr"
 	"github.com/bcext/gcash/blockchain"
 	"github.com/bcext/gcash/blockchain/indexers"
@@ -37,8 +39,6 @@ import (
 	"github.com/bcext/gcash/peer"
 	"github.com/bcext/gcash/txscript"
 	"github.com/bcext/gcash/wire"
-	"github.com/bcext/cashutil"
-	"github.com/bcext/cashutil/bloom"
 )
 
 const (
@@ -2003,7 +2003,7 @@ func (s *server) peerHandler() {
 	if !cfg.DisableDNSSeed {
 		// Add peers discovered through DNS to the address manager.
 		connmgr.SeedFromDNS(activeNetParams.Params, defaultRequiredServices,
-			btcdLookup, func(addrs []*wire.NetAddress) {
+			gcashLookup, func(addrs []*wire.NetAddress) {
 				// Bitcoind uses a lookup of the dns seeder here. This
 				// is rather strange since the values looked up by the
 				// DNS seed lookups will vary quite a lot.
@@ -2384,7 +2384,7 @@ out:
 			// listen port?
 			// XXX this assumes timeout is in seconds.
 			listenPort, err := s.nat.AddPortMapping("tcp", int(lport), int(lport),
-				"btcd listen port", 20*60)
+				"gcash listen port", 20*60)
 			if err != nil {
 				srvrLog.Warnf("can't add UPnP port mapping: %v", err)
 			}
@@ -2471,7 +2471,7 @@ func setupRPCListeners() ([]net.Listener, error) {
 	return listeners, nil
 }
 
-// newServer returns a new btcd server configured to listen on addr for the
+// newServer returns a new gcash server configured to listen on addr for the
 // bitcoin network type specified by chainParams.  Use start to begin accepting
 // connections from peers.
 func newServer(listenAddrs []string, db database.DB, chainParams *chaincfg.Params, interrupt <-chan struct{}) (*server, error) {
@@ -2480,7 +2480,7 @@ func newServer(listenAddrs []string, db database.DB, chainParams *chaincfg.Param
 		services &^= wire.SFNodeBloom
 	}
 
-	amgr := addrmgr.New(cfg.DataDir, btcdLookup)
+	amgr := addrmgr.New(cfg.DataDir, gcashLookup)
 
 	var listeners []net.Listener
 	var nat NAT
@@ -2724,7 +2724,7 @@ func newServer(listenAddrs []string, db database.DB, chainParams *chaincfg.Param
 		OnAccept:       s.inboundPeerConnected,
 		RetryDuration:  connectionRetryInterval,
 		TargetOutbound: uint32(targetOutbound),
-		Dial:           btcdDial,
+		Dial:           gcashDial,
 		OnConnection:   s.outboundPeerConnected,
 		GetNewAddress:  newAddressFunc,
 	})
@@ -2904,7 +2904,7 @@ func addrStringToNetAddr(addr string) (net.Addr, error) {
 	}
 
 	// Attempt to look up an IP address associated with the parsed host.
-	ips, err := btcdLookup(host)
+	ips, err := gcashLookup(host)
 	if err != nil {
 		return nil, err
 	}

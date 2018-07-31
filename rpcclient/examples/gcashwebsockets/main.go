@@ -10,9 +10,9 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/bcext/cashutil"
 	"github.com/bcext/gcash/rpcclient"
 	"github.com/bcext/gcash/wire"
-	"github.com/bcext/cashutil"
 )
 
 func main() {
@@ -31,9 +31,9 @@ func main() {
 		},
 	}
 
-	// Connect to local btcd RPC server using websockets.
-	btcdHomeDir := cashutil.AppDataDir("btcd", false)
-	certs, err := ioutil.ReadFile(filepath.Join(btcdHomeDir, "rpc.cert"))
+	// Connect to local gcash RPC server using websockets.
+	gcashHomeDir := cashutil.AppDataDir("gcash", false)
+	certs, err := ioutil.ReadFile(filepath.Join(gcashHomeDir, "rpc.cert"))
 	if err != nil {
 		log.Fatal(err)
 	}
