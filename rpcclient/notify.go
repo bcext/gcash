@@ -1332,7 +1332,7 @@ func (c *Client) LoadTxFilterAsync(reload bool, addresses []cashutil.Address,
 
 	addrStrs := make([]string, len(addresses))
 	for i, a := range addresses {
-		addrStrs[i] = a.EncodeAddress()
+		addrStrs[i] = a.EncodeAddress(true)
 	}
 	outPointObjects := make([]btcjson.OutPoint, len(outPoints))
 	for i := range outPoints {

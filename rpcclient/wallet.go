@@ -206,7 +206,7 @@ func (c *Client) ListUnspentMinMaxAsync(minConf, maxConf int) FutureListUnspentR
 func (c *Client) ListUnspentMinMaxAddressesAsync(minConf, maxConf int, addrs []cashutil.Address) FutureListUnspentResult {
 	addrStrs := make([]string, 0, len(addrs))
 	for _, a := range addrs {
-		addrStrs = append(addrStrs, a.EncodeAddress())
+		addrStrs = append(addrStrs, a.EncodeAddress(true))
 	}
 
 	cmd := btcjson.NewListUnspentCmd(&minConf, &maxConf, &addrStrs)
@@ -471,7 +471,7 @@ func (r FutureSendToAddressResult) Receive() (*chainhash.Hash, error) {
 //
 // See SendToAddress for the blocking version and more details.
 func (c *Client) SendToAddressAsync(address cashutil.Address, amount cashutil.Amount) FutureSendToAddressResult {
-	addr := address.EncodeAddress()
+	addr := address.EncodeAddress(true)
 	cmd := btcjson.NewSendToAddressCmd(addr, amount.ToBCH(), nil, nil)
 	return c.sendCmd(cmd)
 }
@@ -497,7 +497,7 @@ func (c *Client) SendToAddressCommentAsync(address cashutil.Address,
 	amount cashutil.Amount, comment,
 	commentTo string) FutureSendToAddressResult {
 
-	addr := address.EncodeAddress()
+	addr := address.EncodeAddress(true)
 	cmd := btcjson.NewSendToAddressCmd(addr, amount.ToBCH(), &comment,
 		&commentTo)
 	return c.sendCmd(cmd)
@@ -550,7 +550,7 @@ func (r FutureSendFromResult) Receive() (*chainhash.Hash, error) {
 //
 // See SendFrom for the blocking version and more details.
 func (c *Client) SendFromAsync(fromAccount string, toAddress cashutil.Address, amount cashutil.Amount) FutureSendFromResult {
-	addr := toAddress.EncodeAddress()
+	addr := toAddress.EncodeAddress(true)
 	cmd := btcjson.NewSendFromCmd(fromAccount, addr, amount.ToBCH(), nil,
 		nil, nil)
 	return c.sendCmd(cmd)
@@ -574,7 +574,7 @@ func (c *Client) SendFrom(fromAccount string, toAddress cashutil.Address, amount
 //
 // See SendFromMinConf for the blocking version and more details.
 func (c *Client) SendFromMinConfAsync(fromAccount string, toAddress cashutil.Address, amount cashutil.Amount, minConfirms int) FutureSendFromResult {
-	addr := toAddress.EncodeAddress()
+	addr := toAddress.EncodeAddress(true)
 	cmd := btcjson.NewSendFromCmd(fromAccount, addr, amount.ToBCH(),
 		&minConfirms, nil, nil)
 	return c.sendCmd(cmd)
@@ -603,7 +603,7 @@ func (c *Client) SendFromCommentAsync(fromAccount string,
 	toAddress cashutil.Address, amount cashutil.Amount, minConfirms int,
 	comment, commentTo string) FutureSendFromResult {
 
-	addr := toAddress.EncodeAddress()
+	addr := toAddress.EncodeAddress(true)
 	cmd := btcjson.NewSendFromCmd(fromAccount, addr, amount.ToBCH(),
 		&minConfirms, &comment, &commentTo)
 	return c.sendCmd(cmd)
@@ -660,7 +660,7 @@ func (r FutureSendManyResult) Receive() (*chainhash.Hash, error) {
 func (c *Client) SendManyAsync(fromAccount string, amounts map[cashutil.Address]cashutil.Amount) FutureSendManyResult {
 	convertedAmounts := make(map[string]float64, len(amounts))
 	for addr, amount := range amounts {
-		convertedAmounts[addr.EncodeAddress()] = amount.ToBCH()
+		convertedAmounts[addr.EncodeAddress(true)] = amount.ToBCH()
 	}
 	cmd := btcjson.NewSendManyCmd(fromAccount, convertedAmounts, nil, nil)
 	return c.sendCmd(cmd)
@@ -689,7 +689,7 @@ func (c *Client) SendManyMinConfAsync(fromAccount string,
 
 	convertedAmounts := make(map[string]float64, len(amounts))
 	for addr, amount := range amounts {
-		convertedAmounts[addr.EncodeAddress()] = amount.ToBCH()
+		convertedAmounts[addr.EncodeAddress(true)] = amount.ToBCH()
 	}
 	cmd := btcjson.NewSendManyCmd(fromAccount, convertedAmounts,
 		&minConfirms, nil)
@@ -723,7 +723,7 @@ func (c *Client) SendManyCommentAsync(fromAccount string,
 
 	convertedAmounts := make(map[string]float64, len(amounts))
 	for addr, amount := range amounts {
-		convertedAmounts[addr.EncodeAddress()] = amount.ToBCH()
+		convertedAmounts[addr.EncodeAddress(true)] = amount.ToBCH()
 	}
 	cmd := btcjson.NewSendManyCmd(fromAccount, convertedAmounts,
 		&minConfirms, &comment)
@@ -972,7 +972,7 @@ func (r FutureGetAccountResult) Receive() (string, error) {
 //
 // See GetAccount for the blocking version and more details.
 func (c *Client) GetAccountAsync(address cashutil.Address) FutureGetAccountResult {
-	addr := address.EncodeAddress()
+	addr := address.EncodeAddress(true)
 	cmd := btcjson.NewGetAccountCmd(addr)
 	return c.sendCmd(cmd)
 }
@@ -999,7 +999,7 @@ func (r FutureSetAccountResult) Receive() error {
 //
 // See SetAccount for the blocking version and more details.
 func (c *Client) SetAccountAsync(address cashutil.Address, account string) FutureSetAccountResult {
-	addr := address.EncodeAddress()
+	addr := address.EncodeAddress(true)
 	cmd := btcjson.NewSetAccountCmd(addr, account)
 	return c.sendCmd(cmd)
 }
@@ -1202,7 +1202,7 @@ func (r FutureValidateAddressResult) Receive() (*btcjson.ValidateAddressWalletRe
 //
 // See ValidateAddress for the blocking version and more details.
 func (c *Client) ValidateAddressAsync(address cashutil.Address) FutureValidateAddressResult {
-	addr := address.EncodeAddress()
+	addr := address.EncodeAddress(true)
 	cmd := btcjson.NewValidateAddressCmd(addr)
 	return c.sendCmd(cmd)
 }
@@ -1575,7 +1575,7 @@ func (r FutureGetReceivedByAddressResult) Receive() (cashutil.Amount, error) {
 //
 // See GetReceivedByAddress for the blocking version and more details.
 func (c *Client) GetReceivedByAddressAsync(address cashutil.Address) FutureGetReceivedByAddressResult {
-	addr := address.EncodeAddress()
+	addr := address.EncodeAddress(true)
 	cmd := btcjson.NewGetReceivedByAddressCmd(addr, nil)
 	return c.sendCmd(cmd)
 
@@ -1596,7 +1596,7 @@ func (c *Client) GetReceivedByAddress(address cashutil.Address) (cashutil.Amount
 //
 // See GetReceivedByAddressMinConf for the blocking version and more details.
 func (c *Client) GetReceivedByAddressMinConfAsync(address cashutil.Address, minConfirms int) FutureGetReceivedByAddressResult {
-	addr := address.EncodeAddress()
+	addr := address.EncodeAddress(true)
 	cmd := btcjson.NewGetReceivedByAddressCmd(addr, &minConfirms)
 	return c.sendCmd(cmd)
 }
@@ -1885,7 +1885,7 @@ func (r FutureSignMessageResult) Receive() (string, error) {
 //
 // See SignMessage for the blocking version and more details.
 func (c *Client) SignMessageAsync(address cashutil.Address, message string) FutureSignMessageResult {
-	addr := address.EncodeAddress()
+	addr := address.EncodeAddress(true)
 	cmd := btcjson.NewSignMessageCmd(addr, message)
 	return c.sendCmd(cmd)
 }
@@ -1926,7 +1926,7 @@ func (r FutureVerifyMessageResult) Receive() (bool, error) {
 //
 // See VerifyMessage for the blocking version and more details.
 func (c *Client) VerifyMessageAsync(address cashutil.Address, signature, message string) FutureVerifyMessageResult {
-	addr := address.EncodeAddress()
+	addr := address.EncodeAddress(true)
 	cmd := btcjson.NewVerifyMessageCmd(addr, signature, message)
 	return c.sendCmd(cmd)
 }
@@ -1972,7 +1972,7 @@ func (r FutureDumpPrivKeyResult) Receive() (*cashutil.WIF, error) {
 //
 // See DumpPrivKey for the blocking version and more details.
 func (c *Client) DumpPrivKeyAsync(address cashutil.Address) FutureDumpPrivKeyResult {
-	addr := address.EncodeAddress()
+	addr := address.EncodeAddress(true)
 	cmd := btcjson.NewDumpPrivKeyCmd(addr)
 	return c.sendCmd(cmd)
 }

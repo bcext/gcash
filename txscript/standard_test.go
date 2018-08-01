@@ -490,7 +490,7 @@ type bogusAddress struct{}
 
 // EncodeAddress simply returns an empty string.  It exists to satisfy the
 // cashutil.Address interface.
-func (b *bogusAddress) EncodeAddress() string {
+func (b *bogusAddress) EncodeAddress(cashaddr bool) string {
 	return ""
 }
 

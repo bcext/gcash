@@ -534,7 +534,7 @@ var SimNetParams = Params{
 	HDPrivateKeyID: [4]byte{0x04, 0x20, 0xb9, 0x00}, // starts with sprv
 	HDPublicKeyID:  [4]byte{0x04, 0x20, 0xbd, 0x3a}, // starts with spub
 
-	CashAddrPrefix: "bchsim",
+	CashAddrPrefix: "bchreg",
 
 	// BIP44 coin type used in the hierarchical deterministic path for
 	// address generation.

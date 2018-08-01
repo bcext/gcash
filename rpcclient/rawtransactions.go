@@ -551,7 +551,7 @@ func (r FutureSearchRawTransactionsResult) Receive() ([]*wire.MsgTx, error) {
 //
 // See SearchRawTransactions for the blocking version and more details.
 func (c *Client) SearchRawTransactionsAsync(address cashutil.Address, skip, count int, reverse bool, filterAddrs []string) FutureSearchRawTransactionsResult {
-	addr := address.EncodeAddress()
+	addr := address.EncodeAddress(true)
 	verbose := btcjson.Int(0)
 	cmd := btcjson.NewSearchRawTransactionsCmd(addr, verbose, &skip, &count,
 		nil, &reverse, &filterAddrs)
@@ -600,7 +600,7 @@ func (r FutureSearchRawTransactionsVerboseResult) Receive() ([]*btcjson.SearchRa
 func (c *Client) SearchRawTransactionsVerboseAsync(address cashutil.Address, skip,
 	count int, includePrevOut, reverse bool, filterAddrs *[]string) FutureSearchRawTransactionsVerboseResult {
 
-	addr := address.EncodeAddress()
+	addr := address.EncodeAddress(true)
 	verbose := btcjson.Int(1)
 	var prevOut *int
 	if includePrevOut {

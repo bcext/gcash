@@ -827,14 +827,7 @@ func loadConfig() (*config, []string, error) {
 	// Check mining addresses are valid and saved parsed versions.
 	cfg.miningAddrs = make([]cashutil.Address, 0, len(cfg.MiningAddrs))
 	for _, strAddr := range cfg.MiningAddrs {
-		var addr cashutil.Address
-		var err error
-
-		if len(strAddr) >= 42 {
-			addr, err = cashutil.DecodeCashAddr(strAddr, activeNetParams.Params)
-		} else {
-			addr, err = cashutil.DecodeAddress(strAddr, activeNetParams.Params)
-		}
+		addr, err := cashutil.DecodeAddress(strAddr, activeNetParams.Params)
 		if err != nil {
 			str := "%s: mining address '%s' failed to decode: %v"
 			err := fmt.Errorf(str, funcName, strAddr, err)

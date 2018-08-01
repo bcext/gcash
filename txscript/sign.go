@@ -316,7 +316,7 @@ sigLoop:
 			// can take one signature per public key so if we
 			// already have one, we can throw this away.
 			if pSig.Verify(hash, pubKey) {
-				aStr := addr.EncodeAddress()
+				aStr := addr.EncodeAddress(true)
 				if _, ok := addrToSig[aStr]; !ok {
 					addrToSig[aStr] = sig
 				}
@@ -331,7 +331,7 @@ sigLoop:
 	doneSigs := 0
 	// This assumes that addresses are in the same order as in the script.
 	for _, addr := range addresses {
-		sig, ok := addrToSig[addr.EncodeAddress()]
+		sig, ok := addrToSig[addr.EncodeAddress(true)]
 		if !ok {
 			continue
 		}

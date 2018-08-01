@@ -132,7 +132,7 @@ func (c *Client) ListAddressTransactionsAsync(addresses []cashutil.Address, acco
 	// Convert addresses to strings.
 	addrs := make([]string, 0, len(addresses))
 	for _, addr := range addresses {
-		addrs = append(addrs, addr.EncodeAddress())
+		addrs = append(addrs, addr.EncodeAddress(true))
 	}
 	cmd := btcjson.NewListAddressTransactionsCmd(addrs, &account)
 	return c.sendCmd(cmd)

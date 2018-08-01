@@ -321,7 +321,7 @@ func (f *wsClientFilter) addAddress(a cashutil.Address) {
 		}
 	}
 
-	f.otherAddresses[a.EncodeAddress()] = struct{}{}
+	f.otherAddresses[a.EncodeAddress(true)] = struct{}{}
 }
 
 // addAddressStr parses an address from a string and then adds it to the
@@ -373,7 +373,7 @@ func (f *wsClientFilter) existsAddress(a cashutil.Address) bool {
 		}
 	}
 
-	_, ok := f.otherAddresses[a.EncodeAddress()]
+	_, ok := f.otherAddresses[a.EncodeAddress(true)]
 	return ok
 }
 
@@ -405,7 +405,7 @@ func (f *wsClientFilter) removeAddress(a cashutil.Address) {
 		}
 	}
 
-	delete(f.otherAddresses, a.EncodeAddress())
+	delete(f.otherAddresses, a.EncodeAddress(true))
 }
 
 // removeAddressStr parses an address from a string and then removes it from the
@@ -1006,7 +1006,7 @@ func (m *wsNotificationManager) notifyForTxOuts(ops map[wire.OutPoint]map[chan s
 		}
 
 		for _, txAddr := range txAddrs {
-			cmap, ok := addrs[txAddr.EncodeAddress()]
+			cmap, ok := addrs[txAddr.EncodeAddress(true)]
 			if !ok {
 				continue
 			}
@@ -2098,7 +2098,7 @@ func rescanBlock(wsc *wsClient, lookups *rescanKeys, blk *cashutil.Block) {
 				default:
 					// A new address type must have been added.  Encode as a
 					// payment address string and check the fallback map.
-					addrStr := addr.EncodeAddress()
+					addrStr := addr.EncodeAddress(true)
 					_, ok := lookups.fallbacks[addrStr]
 					if !ok {
 						continue

@@ -25,7 +25,7 @@ func ExamplePayToAddrScript() {
 	// which is useful to ensure the accuracy of the address and determine
 	// the address type.  It is also required for the upcoming call to
 	// PayToAddrScript.
-	addressStr := "12gpXQVcCL2qhTNQgyLVdCFG2Qs2px98nV"
+	addressStr := "bitcoincash:qqfgqp8l9l90zwetj84k2jcac2m8falvvydrpuu45u"
 	address, err := cashutil.DecodeAddress(addressStr, &chaincfg.MainNetParams)
 	if err != nil {
 		fmt.Println(err)
@@ -76,7 +76,7 @@ func ExampleExtractPkScriptAddrs() {
 
 	// Output:
 	// Script Class: pubkeyhash
-	// Addresses: [12gpXQVcCL2qhTNQgyLVdCFG2Qs2px98nV]
+	// Addresses: [bitcoincash:qqfgqp8l9l90zwetj84k2jcac2m8falvvydrpuu45u]
 	// Required Signatures: 1
 }
 

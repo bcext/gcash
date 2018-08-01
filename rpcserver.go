@@ -554,7 +554,7 @@ func handleCreateRawTransaction(s *rpcServer, cmd interface{}, closeChan <-chan 
 		}
 
 		// Decode the provided address.
-		addr, err := cashutil.DecodeCashAddr(encodedAddr, params)
+		addr, err := cashutil.DecodeAddress(encodedAddr, params)
 		if err != nil {
 			return nil, &btcjson.RPCError{
 				Code:    btcjson.ErrRPCInvalidAddressOrKey,
@@ -688,7 +688,7 @@ func createVoutList(mtx *wire.MsgTx, chainParams *chaincfg.Params, filterAddrMap
 		passesFilter := len(filterAddrMap) == 0
 		encodedAddrs := make([]string, len(addrs))
 		for j, addr := range addrs {
-			encodedAddr := cashutil.EncodeCashAddr(addr, chainParams)
+			encodedAddr := addr.EncodeAddress(true)
 			encodedAddrs[j] = encodedAddr
 
 			// No need to check the map again if the filter already
@@ -811,7 +811,7 @@ func handleDecodeScript(s *rpcServer, cmd interface{}, closeChan <-chan struct{}
 		s.cfg.ChainParams)
 	addresses := make([]string, len(addrs))
 	for i, addr := range addrs {
-		addresses[i] = cashutil.EncodeCashAddr(addr, s.cfg.ChainParams)
+		addresses[i] = addr.EncodeAddress(true)
 	}
 
 	// Convert the script itself to a pay-to-script-hash address.
@@ -829,7 +829,7 @@ func handleDecodeScript(s *rpcServer, cmd interface{}, closeChan <-chan struct{}
 		Addresses: addresses,
 	}
 	if scriptClass != txscript.ScriptHashTy {
-		reply.P2sh = cashutil.EncodeCashAddr(p2sh, s.cfg.ChainParams)
+		reply.P2sh = p2sh.EncodeAddress(true)
 	}
 	return reply, nil
 }
@@ -2698,7 +2698,7 @@ func handleGetTxOut(s *rpcServer, cmd interface{}, closeChan <-chan struct{}) (i
 		s.cfg.ChainParams)
 	addresses := make([]string, len(addrs))
 	for i, addr := range addrs {
-		addresses[i] = cashutil.EncodeCashAddr(addr, s.cfg.ChainParams)
+		addresses[i] = addr.EncodeAddress(true)
 	}
 
 	txOutReply := &btcjson.GetTxOutResult{
@@ -2946,7 +2946,7 @@ func createVinListPrevOut(s *rpcServer, mtx *wire.MsgTx, chainParams *chaincfg.P
 		// filter when needed.
 		encodedAddrs := make([]string, len(addrs))
 		for j, addr := range addrs {
-			encodedAddr := cashutil.EncodeCashAddr(addr, chainParams)
+			encodedAddr := addr.EncodeAddress(true)
 			encodedAddrs[j] = encodedAddr
 
 			// No need to check the map again if the filter already
@@ -3036,7 +3036,7 @@ func handleSearchRawTransactions(s *rpcServer, cmd interface{}, closeChan <-chan
 
 	// Attempt to decode the supplied address.
 	params := s.cfg.ChainParams
-	addr, err := cashutil.DecodeCashAddr(c.Address, params)
+	addr, err := cashutil.DecodeAddress(c.Address, params)
 	if err != nil {
 		return nil, &btcjson.RPCError{
 			Code:    btcjson.ErrRPCInvalidAddressOrKey,
@@ -3433,13 +3433,13 @@ func handleValidateAddress(s *rpcServer, cmd interface{}, closeChan <-chan struc
 	c := cmd.(*btcjson.ValidateAddressCmd)
 
 	result := btcjson.ValidateAddressChainResult{}
-	addr, err := cashutil.DecodeCashAddr(c.Address, s.cfg.ChainParams)
+	addr, err := cashutil.DecodeAddress(c.Address, s.cfg.ChainParams)
 	if err != nil {
 		// Return the default value (false) for IsValid.
 		return result, nil
 	}
 
-	result.Address = cashutil.EncodeCashAddr(addr, s.cfg.ChainParams)
+	result.Address = addr.EncodeAddress(true)
 	result.IsValid = true
 
 	return result, nil
@@ -3448,21 +3448,22 @@ func handleValidateAddress(s *rpcServer, cmd interface{}, closeChan <-chan struc
 func convCashAddr(s *rpcServer, cmd interface{}, closeChan <-chan struct{}) (interface{}, error) {
 	c := cmd.(*btcjson.ConvCashAddrCmd)
 
-	if len(c.Address) >= 42 {
-		addr, err := cashutil.DecodeCashAddr(c.Address, s.cfg.ChainParams)
-		if err != nil {
-			return nil, btcjson.ErrRPCInvalidParams
-		}
-
-		return addr.EncodeAddress(), nil
-	}
-
 	addr, err := cashutil.DecodeAddress(c.Address, s.cfg.ChainParams)
 	if err != nil {
 		return nil, btcjson.ErrRPCInvalidParams
 	}
 
-	return cashutil.EncodeCashAddr(addr, s.cfg.ChainParams), nil
+	// bitcoin cash base32-encoded address:
+	// 1. mainnet:  bitcoincash: + 42 bytes = 12 + 42
+	// 2. testnet3: bchtest:     + 42 bytes = 8  + 42
+	// 3. regtest:  bchreg:      + 42 bytes = 7  + 42
+	// if the address does not have the prefix: length = 42
+	// if the address have the prefix: max length = 42 + 12
+	if len(c.Address) >= 42 && len(c.Address) <= 42+12 {
+		return addr.EncodeAddress(false), nil
+	}
+
+	return addr.EncodeAddress(true), nil
 }
 
 func verifyChain(s *rpcServer, level, depth int32) error {
@@ -3522,7 +3523,7 @@ func handleVerifyMessage(s *rpcServer, cmd interface{}, closeChan <-chan struct{
 
 	// Decode the provided address.
 	params := s.cfg.ChainParams
-	addr, err := cashutil.DecodeCashAddr(c.Address, params)
+	addr, err := cashutil.DecodeAddress(c.Address, params)
 	if err != nil {
 		return nil, &btcjson.RPCError{
 			Code:    btcjson.ErrRPCInvalidAddressOrKey,
@@ -3576,7 +3577,7 @@ func handleVerifyMessage(s *rpcServer, cmd interface{}, closeChan <-chan struct{
 	}
 
 	// Return boolean if addresses match.
-	return cashutil.EncodeCashAddr(address, s.cfg.ChainParams) == c.Address, nil
+	return address.EncodeAddress(true) == c.Address, nil
 }
 
 // handleVersion implements the version command.
