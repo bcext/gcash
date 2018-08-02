@@ -1,25 +1,24 @@
-hash: 30562f0035d9bb4d4ee531762e4f7f762ede916255e9aa781df58537651f7382
-updated: 2018-07-06T16:07:52.877260592-07:00
+hash: 17989beba9ce41c1fd018dbd41b36d84ef0d4f8c94df8b32c43adfbc2a8e5fd5
+updated: 2018-08-02T23:07:12.181256+08:00
 imports:
 - name: github.com/aead/siphash
   version: e404fcfc888570cadd1610538e2dbc89f66af814
-- name: github.com/btcsuite/btclog
-  version: 84c8d2346e9fc8c7b947e243b9c24e6df9fd206a
 - name: github.com/bcext/cashutil
-  version: ab6388e0c60ae4834a1f57511e20c17b5f78be4b
+  version: 607fe08061c98889af9599009e62774092d2cf06
   subpackages:
   - base58
-  - bech32
   - bloom
   - gcs
   - gcs/builder
   - hdkeychain
+- name: github.com/btcsuite/btclog
+  version: 84c8d2346e9fc8c7b947e243b9c24e6df9fd206a
 - name: github.com/btcsuite/go-socks
   version: 4720035b7bfd2a9bb130b1c184f8bbe41b6f0d0f
   subpackages:
   - socks
 - name: github.com/btcsuite/goleveldb
-  version: 7834afc9e8cd15233b6c3d97e12674a31ca24602
+  version: 3fd0373267b6461dbefe91cef614278064d05465
   subpackages:
   - leveldb
   - leveldb/cache
@@ -34,7 +33,7 @@ imports:
   - leveldb/table
   - leveldb/util
 - name: github.com/btcsuite/snappy-go
-  version: 0bdef8d067237991ddaa1bb6072a740bc40601ba
+  version: b3db38edf0a9a11a115eb6b022d8c946024a9ac0
 - name: github.com/btcsuite/websocket
   version: 31079b6807923eb23992c421b114992b95131b55
 - name: github.com/btcsuite/winsvc
@@ -46,7 +45,7 @@ imports:
   - svc
   - winapi
 - name: github.com/davecgh/go-spew
-  version: ecdeabc65495df2dec95d7c4a4c3e021903035e5
+  version: 346938d642f2ec3594ed81d874461961cd0faa76
   subpackages:
   - spew
 - name: github.com/jessevdk/go-flags
@@ -56,9 +55,9 @@ imports:
   subpackages:
   - rotator
 - name: github.com/kkdai/bstream
-  version: f391b8402d23024e7c0f624b31267a89998fca95
+  version: f71540b9dfdcfe64dbf2818e9b66423c6aafcacd
 - name: golang.org/x/crypto
-  version: 9419663f5a44be8b34ca85f08abc5fe1be11f8a3
+  version: c126467f60eb25f8f27e5a981f32a87e3965053f
   subpackages:
   - ripemd160
 testImports: []

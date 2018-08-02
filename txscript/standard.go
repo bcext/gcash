@@ -367,7 +367,6 @@ func PayToAddrScript(addr cashutil.Address) ([]byte, error) {
 				nilAddrErrStr)
 		}
 		return payToPubKeyScript(addr.ScriptAddress())
-
 	}
 
 	str := fmt.Sprintf("unable to generate payment script for unsupported "+
