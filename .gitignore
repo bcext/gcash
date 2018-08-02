@@ -36,3 +36,6 @@ _cgo_export.*
 _testmain.go
 
 *.exe
+
+# doc
+release.txt
