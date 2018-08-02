@@ -3,6 +3,60 @@ User visible changes for gcash
   A full-node bitcoin cash implementation written in Go
 ============================================================================
 
+Changes in 1.0.0 (四  8 02 2018)
+  - Adjust pow difficulty algorithm strictly following bitcoin-ABC
+    Specific details: [https://github.com/bitcoincashorg/bitcoincash.org
+    /blob/master/spec/nov-13-hardfork-spec.md](https://github.com
+    /bitcoincashorg/bitcoincash.org/blob/master/spec/
+    nov-13-hardfork-spec.md)
+    - The new difficulty adjustment algorithm activited since
+      Height: `504031` for mainnet
+    - Adjust the order of handing orphan block in `ProcessBlock`
+      function because the next block's difficulty calculation
+      depends on the previous block after the new rules activating
+      Detail: [https://github.com/bcext/gcash/blob/master/
+      blockchain/process.go#L196-L227](https://github.com/
+      bcext/gcash/blob/master/blockchain/process.go#L196-L227)
+  - Adjust signature digest algorithm via setting `SigHashForkID`
+    Detail: [https://github.com/bitcoincashorg/bitcoincash.org/
+    blob/master/spec/replay-protected-sighash.md](https://
+    github.com/bitcoincashorg/bitcoincash.org/blob/master/spec
+    /replay-protected-sighash.md)
+    - At this version, `gcash` supports the new and old signature
+      digest algorithm depending on `ScriptFlags`
+    - All new signature digest algorithm unit testings were checked
+      strictly and passed
+  - Support base32 bitcoin cash address encoding same to bitcoin-ABC
+    Detail: [https://github.com/bitcoincashorg/bitcoincash.org/blob/master
+    /spec/cashaddr.md](https://github.com/bitcoincashorg/bitcoincash.org
+    /blob/master/spec/cashaddr.md)
+    - `gcash` and `cashwallet` use base32 address format default. But the
+    added rpc command can convert the address format between base58 format
+     and base32 format, see `convcashaddr`  rpc command usage
+    - Remove witness relative address encoding: `AddressWitnessPubKeyHash`
+     and `AddressWitnessScriptHash`
+  - Add the following op_code due to May 2018 hard fork:
+    - OP_CAT
+    - OP_SPLIT
+    - OP_AND
+    - OP_OR
+    - OP_XOR
+    - OP_DIV
+    - OP_MOD
+    - OP_NUM2BIN
+    - OP_BIN2NUM
+    > Detail: [https://github.com/bitcoincashorg/bitcoincash.org/blob/master
+    /spec/may-2018-reenabled-opcodes.md](https://github.com/bitcoincashorg/
+    bitcoincash.org/blob/master/spec/may-2018-reenabled-opcodes.md)
+  - Misc changes:
+    - Remove `Witness` item from `TxIn`
+      - Adjust the block size limit to `32M`
+      - Remove the deprecated logic code, including: `txweigth` and
+        `blockweight`
+      - Adjust the `GetSigOpCost` calculation
+      - Adjust the `OP_RETURN` bytes length to 220
+      - Rename the amount unit from `BTC` to `BCH`
+
 Changes in 0.12.0 (Fri Nov 20 2015)
   - Protocol and network related changes:
     - Add a new checkpoint at block height 382320 (#555)
