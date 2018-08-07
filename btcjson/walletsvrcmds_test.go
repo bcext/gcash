@@ -1087,13 +1087,14 @@ func TestWalletSvrCmds(t *testing.T) {
 		{
 			name: "signrawtransaction optional1",
 			newCmd: func() (interface{}, error) {
-				return btcjson.NewCmd("signrawtransaction", "001122", `[{"txid":"123","vout":1,"scriptPubKey":"00","redeemScript":"01"}]`)
+				return btcjson.NewCmd("signrawtransaction", "001122", `[{"txid":"123","vout":1,"amount":5.69,"scriptPubKey":"00","redeemScript":"01"}]`)
 			},
 			staticCmd: func() interface{} {
 				txInputs := []btcjson.RawTxInput{
 					{
 						Txid:         "123",
 						Vout:         1,
+						Amount:       5.69,
 						ScriptPubKey: "00",
 						RedeemScript: "01",
 					},
@@ -1101,13 +1102,14 @@ func TestWalletSvrCmds(t *testing.T) {
 
 				return btcjson.NewSignRawTransactionCmd("001122", &txInputs, nil, nil)
 			},
-			marshalled: `{"jsonrpc":"1.0","method":"signrawtransaction","params":["001122",[{"txid":"123","vout":1,"scriptPubKey":"00","redeemScript":"01"}]],"id":1}`,
+			marshalled: `{"jsonrpc":"1.0","method":"signrawtransaction","params":["001122",[{"txid":"123","vout":1,"amount":5.69,"scriptPubKey":"00","redeemScript":"01"}]],"id":1}`,
 			unmarshalled: &btcjson.SignRawTransactionCmd{
 				RawTx: "001122",
 				Inputs: &[]btcjson.RawTxInput{
 					{
 						Txid:         "123",
 						Vout:         1,
+						Amount:       5.69,
 						ScriptPubKey: "00",
 						RedeemScript: "01",
 					},
