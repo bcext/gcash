@@ -5,10 +5,11 @@ gcash
 [![ISC License](http://img.shields.io/badge/license-ISC-blue.svg)](http://copyfree.org)
 [![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg)](http://godoc.org/github.com/bcext/gcash)
 
-gcash is an alternative full node bitcoin cash implementation written in Go (golang).
+gcash is an alternative full node bitcoin cash implementation written in Go (golang). This project
+is currently under active development and is in a Beta state.
 
-This project is currently under active development and is in a Beta state.  It
-is extremely stable and has been in production use since October 2013.
+gcash is a fork repository from [btcsuite/btcd](https://github.com/btcsuite/btcd), btcd is extremely
+stable and has been in production use since October 2013.
 
 It properly downloads, validates, and serves the block chain using the exact
 rules (including consensus bugs) for block acceptance as Bitcoin-ABC.  We have
@@ -28,10 +29,8 @@ One key difference between gcash and Bitcoin-ABC is that gcash does *NOT* includ
 wallet functionality and this was a very intentional design decision.  See the
 blog entry [here](https://blog.conformal.com/btcd-not-your-moms-bitcoin-daemon)
 for more details.  This means you can't actually make or receive payments
-directly with gcash.  That functionality is provided by the
-[cashwallet](https://github.com/bcext/cashwallet) and
-[Paymetheus](https://github.com/btcsuite/Paymetheus) (Windows-only) projects
-which are both under active development.
+directly with gcash.  That functionality is provided by the [cashwallet](https://github.com/bcext/cashwallet) 
+project which is under active development.
 
 ## Requirements
 
