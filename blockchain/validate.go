@@ -1073,7 +1073,7 @@ func (b *BlockChain) checkConnectBlock(node *blockNode, block *cashutil.Block, v
 	if csvState == ThresholdActive {
 		// If the CSV soft-fork is now active, then modify the
 		// scriptFlags to ensure that the CSV op code is properly
-		// validated during the script checks bleow.
+		// validated during the script checks below.
 		scriptFlags |= txscript.ScriptVerifyCheckSequenceVerify
 
 		// We obtain the MTP of the *previous* block in order to
@@ -1171,12 +1171,12 @@ func (b *BlockChain) CheckConnectBlockTemplate(block *cashutil.Block) error {
 	return b.checkConnectBlock(newNode, block, view, nil)
 }
 
-func isDAAEnabled(currentNode *blockNode, params *chaincfg.Params) bool {
-	if currentNode == nil {
+func isDAAEnabled(prevBlock *blockNode, params *chaincfg.Params) bool {
+	if prevBlock == nil {
 		return false
 	}
 
-	return currentNode.height >= params.DAAHeight
+	return prevBlock.height >= params.DAAHeight
 }
 
 func isMonolithEnabled(currentNode *blockNode, params *chaincfg.Params) bool {

@@ -207,12 +207,9 @@ func (b *BlockChain) ProcessBlock(block *cashutil.Block, flags BehaviorFlags) (b
 	}
 
 	if !fastAdd {
-		// Even though the checks prior to now have already ensured the
-		// proof of work exceeds the claimed amount, the claimed amount
-		// is a field in the block header which could be forged.  This
-		// check ensures the proof of work is at least the minimum
-		// expected based on elapsed time since the last checkpoint and
-		// maximum adjustment allowed by the retarget rules.
+		// Apply the bitcoin-ABC difficulty algorithm, the block's difficulty calculation
+		// to be checked depends on the previous block's timestamp and difficulty. So the
+		// new difficulty algorithm can not deal with the orphan block.
 		requiredTarget, err := b.GetNextWorkRequired(blockHeader)
 		if err != nil {
 			return false, false, ruleError(ErrCalcDifficulty, "can not calculate difficulty")

@@ -156,7 +156,9 @@ func CalcWork(bits uint32) *big.Int {
 
 // GetNextWorkRequired calculate the next block's difficulty needed
 func (b *BlockChain) GetNextWorkRequired(header *wire.BlockHeader) (uint32, error) {
-	prevBlock := b.bestChain.Tip()
+	prevHash := header.PrevBlock
+	prevBlock := b.index.LookupNode(&prevHash)
+
 	// genesis block
 	if prevBlock == nil {
 		return BigToCompact(b.chainParams.PowLimit), nil
