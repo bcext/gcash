@@ -139,9 +139,6 @@ type Params struct {
 	UAHFHeight int32
 	// Block height at which the new DAA becomes active
 	DAAHeight int32
-	// Unix time used for MTP activation of May 15 2018, hardfork
-	MonolithActivationTime   int64
-	MonolithActivationHeight int32 // convenient height check
 
 	// Nov 15, 2018 hard fork
 	MagneticAnomalyActivationTime int64
@@ -244,13 +241,11 @@ var MainNetParams = Params{
 	GenesisHash:                   &genesisHash,
 	PowLimit:                      mainPowLimit,
 	PowLimitBits:                  0x1d00ffff,
-	BIP0034Height:                 227931,     // 000000000000024b89b42a942fe0d9fea3bb44ab7bd1b19115dd6a759c0808b8
-	BIP0065Height:                 388381,     // 000000000000000004c2b624ed5d7756c508d90fd0da2c7c679febfa6c4735f0
-	BIP0066Height:                 363725,     // 00000000000000000379eaa19dce8c9b722d46ae6a57c2f1a988119488b50931
-	UAHFHeight:                    478558,     // 0000000000000000011865af4122fe3b144e2cbeea86142e8ff2fb4107352d43
-	DAAHeight:                     504031,     // 0000000000000000011ebf65b60d0a3de80b8175be709d653b4c1a1beeb6ab9c
-	MonolithActivationTime:        1526400000, // 0000000000000000011ada8bd08f46074f44a8f155396f43e38acf9501c49103
-	MonolithActivationHeight:      530359,
+	BIP0034Height:                 227931, // 000000000000024b89b42a942fe0d9fea3bb44ab7bd1b19115dd6a759c0808b8
+	BIP0065Height:                 388381, // 000000000000000004c2b624ed5d7756c508d90fd0da2c7c679febfa6c4735f0
+	BIP0066Height:                 363725, // 00000000000000000379eaa19dce8c9b722d46ae6a57c2f1a988119488b50931
+	UAHFHeight:                    478558, // 0000000000000000011865af4122fe3b144e2cbeea86142e8ff2fb4107352d43
+	DAAHeight:                     504031, // 0000000000000000011ebf65b60d0a3de80b8175be709d653b4c1a1beeb6ab9c
 	MagneticAnomalyActivationTime: 1542300000,
 	GreatWallActivationTime:       1557921600,
 
@@ -350,7 +345,6 @@ var TestNet3Params = Params{
 	BIP0066Height:                 330776,  // 000000002104c8c45e99a8853285a3b592602a3ccde2b832481da85e9e4ba182
 	UAHFHeight:                    1155875, // 00000000f17c850672894b9a75b63a1e72830bbd5f4c8889b5c1a80e7faef138
 	DAAHeight:                     1188697, // 0000000000170ed0918077bde7b4d36cc4c91be69fa09211f748240dabe047fb
-	MonolithActivationTime:        1526400000,
 	MagneticAnomalyActivationTime: 1542300000,
 	GreatWallActivationTime:       1557921600,
 
@@ -429,7 +423,6 @@ var RegressionNetParams = Params{
 	BIP0066Height:                 1251,      // Used by regression tests
 	UAHFHeight:                    0,         // UAHF is always enabled on regtest
 	DAAHeight:                     0,         // November 13, 2017 hard fork is always on on regtest
-	MonolithActivationTime:        1526400000,
 	MagneticAnomalyActivationTime: 1542300000,
 	GreatWallActivationTime:       1557921600,
 
@@ -505,7 +498,6 @@ var SimNetParams = Params{
 	BIP0066Height:                 0, // Always active on simnet
 	UAHFHeight:                    0, // UAHF is always enabled on regtest
 	DAAHeight:                     0, // November 13, 2017 hard fork is always on on regtest
-	MonolithActivationTime:        1526400000,
 	MagneticAnomalyActivationTime: 1542300000,
 	GreatWallActivationTime:       1557921600,
 

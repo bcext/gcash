@@ -1223,5 +1223,5 @@ func isReplayProtectionEnabled(prevBlock *blockNode, params *chaincfg.Params) bo
 		return false
 	}
 
-	return prevBlock.CalcPastMedianTime().Unix() >= params.MagneticAnomalyActivationTime
+	return prevBlock.CalcPastMedianTime().Unix() >= params.GreatWallActivationTime
 }

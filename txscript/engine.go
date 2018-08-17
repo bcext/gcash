@@ -24,6 +24,7 @@ const (
 
 	// ScriptStrictMultiSig defines whether to verify the stack item
 	// used by CHECKMULTISIG is zero length.
+	// It is same to ScriptVerifyNullDummy(in bitcoin-ABC)
 	ScriptStrictMultiSig
 
 	// ScriptDiscourageUpgradableNops defines whether to verify that
@@ -92,9 +93,6 @@ const (
 
 	// ScriptEnableCheckDataSig defines OP_CHECKDATASIG and variant are enabled.
 	ScriptEnableCheckDataSig
-
-	// ScriptEnableMonolith enables some new opcodes.
-	ScriptEnableMonolith
 )
 
 const (
@@ -387,10 +385,6 @@ func (vm *Engine) Step() (done bool, err error) {
 // Execute will execute all scripts in the script engine and return either nil
 // for successful validation or an error if one occurred.
 func (vm *Engine) Execute() (err error) {
-	if vm.hasFlag(ScriptEnableSighashForkid) {
-		vm.flags |= ScriptVerifyStrictEncoding
-	}
-
 	done := false
 	for !done {
 		log.Tracef("%v", newLogClosure(func() string {

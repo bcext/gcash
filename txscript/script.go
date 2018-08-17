@@ -389,24 +389,22 @@ func shallowCopyTx(tx *wire.MsgTx) wire.MsgTx {
 // CalcSignatureHash will, given a script and hash type for the current script
 // engine instance, calculate the signature hash to be used for signing and
 // verification.
-func CalcSignatureHash(script []byte, amount cashutil.Amount, hashType SigHashType, tx *wire.MsgTx, idx int) ([]byte, error) {
+func CalcSignatureHash(script []byte, amount cashutil.Amount, hashType SigHashType,
+	tx *wire.MsgTx, idx int) ([]byte, error) {
+
 	parsedScript, err := parseScript(script)
 	if err != nil {
 		return nil, fmt.Errorf("cannot parse output script: %v", err)
 	}
 
-	var flag ScriptFlags
-	if hashType.hasForkID() {
-		flag |= ScriptEnableSighashForkid
-	}
-	return calcSignatureHash(parsedScript, hashType, tx, idx, amount, flag), nil
+	return calcSignatureHash(parsedScript, hashType, tx, idx, amount, StandardVerifyFlags), nil
 }
 
 // calcSignatureHash will, given a script and hash type for the current script
 // engine instance, calculate the signature hash to be used for signing and
 // verification.
-func calcSignatureHash(script []parsedOpcode, hashType SigHashType, tx *wire.MsgTx, idx int, amount cashutil.Amount,
-	flags ScriptFlags) []byte {
+func calcSignatureHash(script []parsedOpcode, hashType SigHashType, tx *wire.MsgTx,
+	idx int, amount cashutil.Amount, flags ScriptFlags) []byte {
 
 	if flags&ScriptEnableReplayProtection != 0 {
 		// Legacy chain's value for fork id must be of the form 0xffxxxx.

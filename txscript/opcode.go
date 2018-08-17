@@ -635,13 +635,6 @@ func (pop *parsedOpcode) isDisabled(flags ScriptFlags) bool {
 		return true
 	case OP_RSHIFT:
 		return true
-
-	case OP_CAT, OP_SPLIT, OP_NUM2BIN, OP_BIN2NUM, OP_AND, OP_OR, OP_XOR, OP_DIV, OP_MOD:
-		// Opcodes that have been reenabled.
-		if flags&ScriptEnableMonolith != 0 {
-			return false
-		}
-		return true
 	default:
 		return false
 	}
@@ -2112,7 +2105,8 @@ func opcodeCheckSig(op *parsedOpcode, vm *Engine) error {
 	// to sign itself.
 	subScript = removeOpcodeByData(subScript, fullSigBytes)
 
-	hash = calcSignatureHash(subScript, hashType, &vm.tx, vm.txIdx, cashutil.Amount(vm.inputAmount), vm.flags)
+	hash = calcSignatureHash(subScript, hashType, &vm.tx, vm.txIdx,
+		cashutil.Amount(vm.inputAmount), vm.flags)
 
 	pubKey, err := btcec.ParsePubKey(pkBytes, btcec.S256())
 	if err != nil {
@@ -2362,7 +2356,8 @@ func opcodeCheckMultiSig(op *parsedOpcode, vm *Engine) error {
 		}
 
 		// Generate the signature hash based on the signature hash type.
-		h := calcSignatureHash(script, hashType, &vm.tx, vm.txIdx, cashutil.Amount(vm.inputAmount), vm.flags)
+		h := calcSignatureHash(script, hashType, &vm.tx, vm.txIdx,
+			cashutil.Amount(vm.inputAmount), vm.flags)
 
 		var valid bool
 		if vm.sigCache != nil {

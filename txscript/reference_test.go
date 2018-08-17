@@ -175,8 +175,6 @@ func parseScriptFlags(flagStr string) (ScriptFlags, error) {
 			flags |= ScriptEnableSighashForkid
 		case "REPLAY_PROTECTION":
 			flags |= ScriptEnableReplayProtection
-		case "MONOLITH_OPCODES":
-			flags |= ScriptEnableMonolith
 		default:
 			return flags, fmt.Errorf("invalid flag: %s", flag)
 		}
@@ -260,7 +258,8 @@ func parseExpectedResult(expected string) ([]ErrorCode, error) {
 		return []ErrorCode{ErrScriptModByZero}, nil
 	case "OPERAND_SIZE":
 		return []ErrorCode{ErrInvalidOperandSize}, nil
-
+	case "IMPOSSIBLE_ENCODING":
+		return []ErrorCode{ErrImpossibleEncoding}, nil
 	}
 
 	return nil, fmt.Errorf("unrecognized expected result in test data: %v",
