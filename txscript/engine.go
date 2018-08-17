@@ -90,6 +90,9 @@ const (
 	// using a different fork id.
 	ScriptEnableReplayProtection
 
+	// ScriptEnableCheckDataSig defines OP_CHECKDATASIG and variant are enabled.
+	ScriptEnableCheckDataSig
+
 	// ScriptEnableMonolith enables some new opcodes.
 	ScriptEnableMonolith
 )

@@ -972,7 +972,8 @@ func (b *BlockChain) checkConnectBlock(node *blockNode, block *cashutil.Block, v
 		// this on every loop iteration to avoid overflow.
 		lastSigOpCost := totalSigOpCost
 		totalSigOpCost += sigOpCost
-		if totalSigOpCost < lastSigOpCost || totalSigOpCost > GetMaxBlockSigOpsCount(serializeSize) {
+		if totalSigOpCost < lastSigOpCost ||
+			totalSigOpCost > GetMaxBlockSigOpsCount(serializeSize) {
 			str := fmt.Sprintf("block contains too many "+
 				"signature operations - got %v, max %v",
 				totalSigOpCost, GetMaxBlockSigOpsCount(serializeSize))
@@ -1103,13 +1104,35 @@ func (b *BlockChain) checkConnectBlock(node *blockNode, block *cashutil.Block, v
 		}
 	}
 
-	// DAA activated
-	if isDAAEnabled(node, b.chainParams) {
+	// If the UAHF is enabled, we start accepting replay protected txns
+	if isUAHFenabled(node.parent, b.chainParams) {
+		scriptFlags |= txscript.ScriptVerifyStrictEncoding
 		scriptFlags |= txscript.ScriptEnableSighashForkid
 	}
 
-	if isMonolithEnabled(node, b.chainParams) {
-		scriptFlags |= txscript.ScriptEnableMonolith
+	// If the DAA HF is enabled, we start rejecting transaction that use a high
+	// s in their signature. We also make sure that signature that are supposed
+	// to fail (for instance in multisig or other forms of smart contracts) are
+	// null.
+	if isDAAEnabled(node.parent, b.chainParams) {
+		scriptFlags |= txscript.ScriptVerifyLowS
+		scriptFlags |= txscript.ScriptVerifyNullFail
+	}
+
+	// When the magnetic anomaly fork is enabled, we start accepting
+	// transactions using the OP_CHECKDATASIG opcode and it's verify
+	// alternative. We also start enforcing push only signatures and
+	// clean stack.
+	if isMagneticAnomalyEnabled(node.parent, b.chainParams) {
+		scriptFlags |= txscript.ScriptEnableCheckDataSig
+		scriptFlags |= txscript.ScriptVerifySigPushOnly
+		scriptFlags |= txscript.ScriptVerifyCleanStack
+	}
+
+	// We make sure this node will have replay protection during the next hard
+	// fork.
+	if isReplayProtectionEnabled(node.parent, b.chainParams) {
+		scriptFlags |= txscript.ScriptEnableReplayProtection
 	}
 
 	// Now that the inexpensive checks are done and have passed, verify the
@@ -1171,6 +1194,14 @@ func (b *BlockChain) CheckConnectBlockTemplate(block *cashutil.Block) error {
 	return b.checkConnectBlock(newNode, block, view, nil)
 }
 
+func isUAHFenabled(prevBlock *blockNode, params *chaincfg.Params) bool {
+	if prevBlock == nil {
+		return false
+	}
+
+	return prevBlock.height >= params.UAHFHeight
+}
+
 func isDAAEnabled(prevBlock *blockNode, params *chaincfg.Params) bool {
 	if prevBlock == nil {
 		return false
@@ -1179,10 +1210,18 @@ func isDAAEnabled(prevBlock *blockNode, params *chaincfg.Params) bool {
 	return prevBlock.height >= params.DAAHeight
 }
 
-func isMonolithEnabled(currentNode *blockNode, params *chaincfg.Params) bool {
-	if currentNode == nil {
+func isMagneticAnomalyEnabled(prevNode *blockNode, params *chaincfg.Params) bool {
+	if prevNode == nil {
 		return false
 	}
 
-	return currentNode.CalcPastMedianTime().Unix() >= int64(params.MonolithActivationTime)
+	return prevNode.CalcPastMedianTime().Unix() > params.MagneticAnomalyActivationTime
+}
+
+func isReplayProtectionEnabled(prevBlock *blockNode, params *chaincfg.Params) bool {
+	if prevBlock == nil {
+		return false
+	}
+
+	return prevBlock.CalcPastMedianTime().Unix() >= params.MagneticAnomalyActivationTime
 }
