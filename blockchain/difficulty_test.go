@@ -98,7 +98,8 @@ func TestGetNextWork(t *testing.T) {
 		panic(err)
 	}
 	if targetBits != 0x1d00d86a {
-		t.Errorf("calculateNextWorkRequired() calculates target bits error, want: %d, but got: %d", 0x1d00d86a, targetBits)
+		t.Errorf("calculateNextWorkRequired() calculates target bits error, "+
+			"want: %d, but got: %d", 0x1d00d86a, targetBits)
 	}
 
 	// Test the constraint on the upper bound for next work
@@ -115,7 +116,8 @@ func TestGetNextWork(t *testing.T) {
 	}
 
 	if targetBits != 0x1d00ffff {
-		t.Errorf("calculateNextWorkRequired() calculates target bits error, want: %d, but got: %d", 0x1d00ffff, targetBits)
+		t.Errorf("calculateNextWorkRequired() calculates target bits error,"+
+			" want: %d, but got: %d", 0x1d00ffff, targetBits)
 	}
 
 	// Test the constraint on the lower bound for actual time taken
@@ -132,7 +134,8 @@ func TestGetNextWork(t *testing.T) {
 	}
 
 	if targetBits != 0x1c0168fd {
-		t.Errorf("calculateNextWorkRequired() calculates target bits error, want: %d, but got: %d", 0x1c0168fd, targetBits)
+		t.Errorf("calculateNextWorkRequired() calculates target bits error,"+
+			" want: %d, but got: %d", 0x1c0168fd, targetBits)
 	}
 
 	// Test the constraint on the upper bound for actual time taken
@@ -149,7 +152,8 @@ func TestGetNextWork(t *testing.T) {
 	}
 
 	if targetBits != 0x1d00e1fd {
-		t.Errorf("calculateNextWorkRequired() calculates target bits error, want: %d, but got: %d", 0x1d00e1fd, targetBits)
+		t.Errorf("calculateNextWorkRequired() calculates target bits error,"+
+			" want: %d, but got: %d", 0x1d00e1fd, targetBits)
 	}
 }
 
@@ -221,12 +225,15 @@ func TestRetarget(t *testing.T) {
 		header = blocks[i].Header()
 		AddBlockToChain(blocks, i, &header, chain)
 
-		powTarget, err := chain.GetNextWorkRequired(&header)
+		var nextHeader wire.BlockHeader
+		nextHeader.PrevBlock = blocks[i].hash
+		powTarget, err := chain.GetNextWorkRequired(&nextHeader)
 		if err != nil {
 			panic(err)
 		}
 		if powTarget != initialBits {
-			t.Errorf("GetNextWorkRequired() calculates error, want: %d, but got: %d", initialBits, powTarget)
+			t.Errorf("GetNextWorkRequired() calculates error,"+
+				" want: %d, but got: %d", initialBits, powTarget)
 		}
 	}
 
@@ -237,12 +244,88 @@ func TestRetarget(t *testing.T) {
 	header = blocks[110].Header()
 	AddBlockToChain(blocks, 110, &header, chain)
 
-	powTarget, err := chain.GetNextWorkRequired(&header)
+	var nextHeader wire.BlockHeader
+	nextHeader.PrevBlock = blocks[110].hash
+
+	powTarget, err := chain.GetNextWorkRequired(&nextHeader)
 	if err != nil {
 		panic(err)
 	}
 	if powTarget != BigToCompact(currentPow) {
-		t.Errorf("GetNextWorkRequired() calculates error, want: %d, but got: %d", BigToCompact(currentPow), powTarget)
+		t.Errorf("GetNextWorkRequired() calculates error,"+
+			" want: %d, but got: %d", BigToCompact(currentPow), powTarget)
+	}
+
+	// As we continue with 2h blocks, difficulty continue to decrease.
+	blocks[111] = getBlockNode(blocks[110], 2*3600, BigToCompact(currentPow))
+	currentPow = CompactToBig(BigToCompact(currentPow))
+	currentPow.Add(currentPow, new(big.Int).Rsh(currentPow, 2))
+	header = blocks[111].Header()
+	AddBlockToChain(blocks, 111, &header, chain)
+
+	nextHeader.PrevBlock = blocks[111].hash
+	powTarget, err = chain.GetNextWorkRequired(&nextHeader)
+	if err != nil {
+		panic(err)
+	}
+	if powTarget != BigToCompact(currentPow) {
+		t.Errorf("GetNextWorkRequired() calculates error, "+
+			"want: %d, but got: %d", BigToCompact(currentPow), powTarget)
+	}
+
+	// We decrease again.
+	blocks[112] = getBlockNode(blocks[111], 2*3600, BigToCompact(currentPow))
+	currentPow = CompactToBig(BigToCompact(currentPow))
+	currentPow.Add(currentPow, new(big.Int).Rsh(currentPow, 2))
+	header = blocks[112].Header()
+	AddBlockToChain(blocks, 112, &header, chain)
+
+	nextHeader.PrevBlock = blocks[112].hash
+	powTarget, err = chain.GetNextWorkRequired(&nextHeader)
+	if err != nil {
+		panic(err)
+	}
+	if powTarget != BigToCompact(currentPow) {
+		t.Errorf("GetNextWorkRequired() calculates error,"+
+			" want: %d, but got: %d", BigToCompact(currentPow), powTarget)
+	}
+
+	// We check that we do not go below the minimal difficulty.
+	blocks[113] = getBlockNode(blocks[112], 2*3600, BigToCompact(currentPow))
+	currentPow = CompactToBig(BigToCompact(currentPow))
+	currentPow.Add(currentPow, new(big.Int).Rsh(currentPow, 2))
+	if BigToCompact(powLimit) == BigToCompact(currentPow) {
+		t.Error("the current difficulty should not be equal to the lowest difficulty")
+	}
+	header = blocks[113].Header()
+	AddBlockToChain(blocks, 113, &header, chain)
+
+	nextHeader.PrevBlock = blocks[113].hash
+	powTarget, err = chain.GetNextWorkRequired(&nextHeader)
+	if err != nil {
+		panic(err)
+	}
+	if powTarget != BigToCompact(powLimit) {
+		t.Errorf("GetNextWorkRequired() calculates error,"+
+			" want: %d, but got: %d", BigToCompact(currentPow), powTarget)
+	}
+
+	// Once we reached the minimal difficulty, we stick with it.
+	blocks[114] = getBlockNode(blocks[113], 2*3600, BigToCompact(powLimit))
+	if BigToCompact(powLimit) == BigToCompact(currentPow) {
+		t.Error("the current difficulty should not be equal to the lowest difficulty")
+	}
+	header = blocks[114].Header()
+	AddBlockToChain(blocks, 114, &header, chain)
+
+	nextHeader.PrevBlock = blocks[114].hash
+	powTarget, err = chain.GetNextWorkRequired(&nextHeader)
+	if err != nil {
+		panic(err)
+	}
+	if powTarget != BigToCompact(powLimit) {
+		t.Errorf("GetNextWorkRequired() calculates error,"+
+			" want: %d, but got: %d", BigToCompact(currentPow), powTarget)
 	}
 }
 
@@ -298,7 +381,8 @@ func TestCashDifficulty(t *testing.T) {
 			panic(err)
 		}
 		if powTarget != bits {
-			t.Errorf("GetNextWorkRequired() calculates error, want: %d, but got: %d", bits, powTarget)
+			t.Errorf("GetNextWorkRequired() calculates error, "+
+				"want: %d, but got: %d", bits, powTarget)
 		}
 
 		i++
@@ -316,7 +400,8 @@ func TestCashDifficulty(t *testing.T) {
 		panic(err)
 	}
 	if powTarget != bits {
-		t.Errorf("GetNextWorkRequired() calculates error, want: %d, but got: %d", bits, powTarget)
+		t.Errorf("GetNextWorkRequired() calculates error, "+
+			"want: %d, but got: %d", bits, powTarget)
 	}
 
 	blocks[i] = getBlockNode(blocks[i-1], 2*600-6000, bits)
@@ -328,7 +413,8 @@ func TestCashDifficulty(t *testing.T) {
 		panic(err)
 	}
 	if powTarget != bits {
-		t.Errorf("GetNextWorkRequired() calculates error, want: %d, but got: %d", bits, powTarget)
+		t.Errorf("GetNextWorkRequired() calculates error, "+
+			"want: %d, but got: %d", bits, powTarget)
 	}
 
 	// The system should continue unaffected by the block with a bogous
@@ -342,7 +428,8 @@ func TestCashDifficulty(t *testing.T) {
 			panic(err)
 		}
 		if powTarget != bits {
-			t.Errorf("GetNextWorkRequired() calculates error, want: %d, but got: %d", bits, powTarget)
+			t.Errorf("GetNextWorkRequired() calculates error,"+
+				" want: %d, but got: %d", bits, powTarget)
 		}
 		i++
 	}
@@ -356,7 +443,8 @@ func TestCashDifficulty(t *testing.T) {
 		panic(err)
 	}
 	if powTarget != bits {
-		t.Errorf("GetNextWorkRequired() calculates error, want: %d, but got: %d", bits, powTarget)
+		t.Errorf("GetNextWorkRequired() calculates error, "+
+			"want: %d, but got: %d", bits, powTarget)
 	}
 	i++
 
