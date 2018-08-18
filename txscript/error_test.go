@@ -68,6 +68,7 @@ func TestErrorCodeStringer(t *testing.T) {
 		{ErrScriptMustUseForkid, "ErrScriptMustUseForkid"},
 		{ErrScriptDivByZero, "ErrScriptDivByZero"},
 		{ErrScriptModByZero, "ErrScriptModByZero"},
+		{ErrScriptCheckDataSigVerify, "ErrScriptCheckDataSigVerify"},
 		{0xffff, "Unknown ErrorCode (65535)"},
 	}
 

@@ -619,6 +619,30 @@ func (vm *Engine) checkSignatureEncoding(sig []byte) error {
 	return nil
 }
 
+func (vm *Engine) checkDataSignatureEncoding(sig []byte) error {
+	// Empty signature. Not strictly DER encoded, but allowed to provide a
+	// compact way to provide an invalid signature for use with CHECK(MULTI)SIG
+	if len(sig) == 0 {
+		return nil
+	}
+
+	err := vm.checkSignatureEncoding(sig)
+	if vm.hasFlag(ScriptVerifyLowS) {
+		if err != nil {
+			return scriptError(ErrSigHighS, "S values are higher than the half order")
+		}
+	}
+
+	if vm.flags&(ScriptVerifyDERSignatures|ScriptVerifyLowS|ScriptVerifyStrictEncoding) != 0 &&
+		err != nil {
+		if err != nil {
+			return scriptError(ErrSigDER, "not canonically-encoded  DER signature")
+		}
+	}
+
+	return nil
+}
+
 // getStack returns the contents of stack as a byte array bottom up
 func getStack(stack *stack) [][]byte {
 	array := make([][]byte, stack.Depth())

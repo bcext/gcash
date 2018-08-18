@@ -242,6 +242,8 @@ const (
 	ErrScriptDivByZero
 	ErrScriptModByZero
 
+	ErrScriptCheckDataSigVerify
+
 	// numErrorCodes is the maximum error code number used in tests.  This
 	// entry MUST be the last entry in the enum.
 	numErrorCodes
@@ -300,6 +302,7 @@ var errorCodeStrings = map[ErrorCode]string{
 	ErrScriptMustUseForkid:      "ErrScriptMustUseForkid",
 	ErrScriptDivByZero:          "ErrScriptDivByZero",
 	ErrScriptModByZero:          "ErrScriptModByZero",
+	ErrScriptCheckDataSigVerify: "ErrScriptCheckDataSigVerify",
 }
 
 // String returns the ErrorCode as a human-readable name.

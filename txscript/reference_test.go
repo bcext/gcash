@@ -171,10 +171,14 @@ func parseScriptFlags(flagStr string) (ScriptFlags, error) {
 			flags |= ScriptVerifyStrictEncoding
 		case "MINIMALIF":
 			flags |= ScriptVerifyMinimalIf
+		case "COMPRESSED_PUBKEYTYPE":
+			flags |= ScriptVerifyCompressedPubkey
 		case "SIGHASH_FORKID":
 			flags |= ScriptEnableSighashForkid
 		case "REPLAY_PROTECTION":
 			flags |= ScriptEnableReplayProtection
+		case "CHECKDATASIG":
+			flags |= ScriptEnableCheckDataSig
 		default:
 			return flags, fmt.Errorf("invalid flag: %s", flag)
 		}
@@ -260,6 +264,8 @@ func parseExpectedResult(expected string) ([]ErrorCode, error) {
 		return []ErrorCode{ErrInvalidOperandSize}, nil
 	case "IMPOSSIBLE_ENCODING":
 		return []ErrorCode{ErrImpossibleEncoding}, nil
+	case "CHECKDATASIGVERIFY":
+		return []ErrorCode{ErrScriptCheckDataSigVerify}, nil
 	}
 
 	return nil, fmt.Errorf("unrecognized expected result in test data: %v",
@@ -325,9 +331,7 @@ func testScripts(t *testing.T, tests [][]interface{}, useSigCache bool) {
 			continue
 		}
 
-		var (
-			inputAmt cashutil.Amount
-		)
+		var inputAmt cashutil.Amount
 
 		// When the first field of the test data is a slice it contains
 		// amount is offset by 1 as a result.

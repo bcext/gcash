@@ -4031,12 +4031,6 @@ func TestRemoveOpcodeByData(t *testing.T) {
 				bytes.Repeat([]byte{0}, 65532)...), []byte{1, 2, 3, 4}...),
 		},
 		{
-			name:   "invalid opcode ",
-			before: []byte{OP_UNKNOWN187},
-			remove: []byte{1, 2, 3, 4},
-			after:  []byte{OP_UNKNOWN187},
-		},
-		{
 			name:   "invalid length (instruction)",
 			before: []byte{OP_PUSHDATA1},
 			remove: []byte{1, 2, 3, 4},

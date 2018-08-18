@@ -226,8 +226,8 @@ const (
 	OP_NOP8                = 0xb7 // 183
 	OP_NOP9                = 0xb8 // 184
 	OP_NOP10               = 0xb9 // 185
-	OP_UNKNOWN186          = 0xba // 186
-	OP_UNKNOWN187          = 0xbb // 187
+	OP_CHECKDATASIG        = 0xba // 186
+	OP_CHECKDATASIGVERIFY  = 0xbb // 187
 	OP_UNKNOWN188          = 0xbc // 188
 	OP_UNKNOWN189          = 0xbd // 189
 	OP_UNKNOWN190          = 0xbe // 190
@@ -511,9 +511,11 @@ var opcodeArray = [256]opcode{
 	OP_NOP9:  {OP_NOP9, "OP_NOP9", 1, opcodeNop},
 	OP_NOP10: {OP_NOP10, "OP_NOP10", 1, opcodeNop},
 
+	// More crypto
+	OP_CHECKDATASIG:       {OP_CHECKDATASIG, "OP_CHECKDATASIG", 1, opcodeCheckDataSig},
+	OP_CHECKDATASIGVERIFY: {OP_CHECKDATASIGVERIFY, "OP_CHECKDATASIGVERIFY", 1, opcodeCheckDataSigVerify},
+
 	// Undefined opcodes.
-	OP_UNKNOWN186: {OP_UNKNOWN186, "OP_UNKNOWN186", 1, opcodeInvalid},
-	OP_UNKNOWN187: {OP_UNKNOWN187, "OP_UNKNOWN187", 1, opcodeInvalid},
 	OP_UNKNOWN188: {OP_UNKNOWN188, "OP_UNKNOWN188", 1, opcodeInvalid},
 	OP_UNKNOWN189: {OP_UNKNOWN189, "OP_UNKNOWN189", 1, opcodeInvalid},
 	OP_UNKNOWN190: {OP_UNKNOWN190, "OP_UNKNOWN190", 1, opcodeInvalid},
@@ -2498,6 +2500,9 @@ func opcodeNum2bin(p *parsedOpcode, vm *Engine) error {
 	}
 
 	origin, err := vm.dstack.PopByteArray()
+	if err != nil {
+		return err
+	}
 
 	// Copy origin bytes from stack to avoid bother origin stack information
 	target := make([]byte, len(origin))
@@ -2609,6 +2614,97 @@ func bytesOperate(p *parsedOpcode, vm *Engine) error {
 	}
 
 	vm.dstack.PushByteArray(bytes2)
+
+	return nil
+}
+
+func opcodeCheckDataSig(p *parsedOpcode, vm *Engine) error {
+	// Make sure this remains an error before activation.
+	if !vm.hasFlag(ScriptEnableCheckDataSig) {
+		return scriptError(ErrReservedOpcode, "the opcode is disabled")
+	}
+
+	// sig message pubkey -- bool
+	if vm.dstack.Depth() < 3 {
+		return scriptError(ErrInvalidStackOperation, "stack size error")
+	}
+
+	pubKey, err := vm.dstack.PopByteArray()
+	if err != nil {
+		return err
+	}
+
+	message, err := vm.dstack.PopByteArray()
+	if err != nil {
+		return err
+	}
+
+	sig, err := vm.dstack.PopByteArray()
+	if err != nil {
+
+		return err
+	}
+
+	err = vm.checkDataSignatureEncoding(sig)
+	if err != nil {
+		vm.dstack.PushBool(false)
+		return err
+	}
+
+	err = vm.checkPubKeyEncoding(pubKey)
+	if err != nil {
+		vm.dstack.PushBool(false)
+		return err
+	}
+
+	var valid bool
+	if len(sig) > 0 {
+		h := chainhash.HashB(message)
+		pk, err := btcec.ParsePubKey(pubKey, btcec.S256())
+		if err != nil {
+			vm.dstack.PushBool(false)
+			return err
+		}
+
+		var signature *btcec.Signature
+		if vm.hasFlag(ScriptVerifyStrictEncoding) ||
+			vm.hasFlag(ScriptVerifyDERSignatures) {
+
+			signature, err = btcec.ParseDERSignature(sig, btcec.S256())
+		} else {
+			signature, err = btcec.ParseSignature(sig, btcec.S256())
+		}
+		if err != nil {
+			vm.dstack.PushBool(false)
+			return err
+		}
+
+		valid = signature.Verify(h, pk)
+	}
+
+	if !valid && vm.hasFlag(ScriptVerifyNullFail) && len(sig) > 0 {
+		str := "signature not empty on failed checkdatasig"
+		return scriptError(ErrNullFail, str)
+	}
+
+	vm.dstack.PushBool(valid)
+	return nil
+}
+
+func opcodeCheckDataSigVerify(p *parsedOpcode, vm *Engine) error {
+	err := opcodeCheckDataSig(p, vm)
+	if err != nil {
+		return err
+	}
+
+	valid, err := vm.dstack.PopBool()
+	if err != nil {
+		return err
+	}
+
+	if !valid {
+		return scriptError(ErrScriptCheckDataSigVerify, "failed to verify data signature")
+	}
 
 	return nil
 }
