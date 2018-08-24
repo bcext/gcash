@@ -12,7 +12,7 @@ import "encoding/json"
 // returns a hex-encoded string.
 type GetBlockHeaderVerboseResult struct {
 	Hash          string  `json:"hash"`
-	Confirmations uint64  `json:"confirmations"`
+	Confirmations int64   `json:"confirmations"`
 	Height        int32   `json:"height"`
 	Version       int32   `json:"version"`
 	VersionHex    string  `json:"versionHex"`
@@ -30,7 +30,7 @@ type GetBlockHeaderVerboseResult struct {
 // hex-encoded string.
 type GetBlockVerboseResult struct {
 	Hash          string        `json:"hash"`
-	Confirmations uint64        `json:"confirmations"`
+	Confirmations int64         `json:"confirmations"`
 	Size          int32         `json:"size"`
 	Height        int64         `json:"height"`
 	Version       int32         `json:"version"`

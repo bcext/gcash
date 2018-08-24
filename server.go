@@ -1106,7 +1106,7 @@ func (sp *serverPeer) OnFilterAdd(_ *peer.Peer, msg *wire.MsgFilterAdd) {
 		return
 	}
 
-	if sp.filter.IsLoaded() {
+	if !sp.filter.IsLoaded() {
 		peerLog.Debugf("%s sent a filteradd request with no filter "+
 			"loaded -- disconnecting", sp)
 		sp.Disconnect()
@@ -1918,6 +1918,7 @@ func newPeerConfig(sp *serverPeer) *peer.Config {
 		Services:          sp.server.services,
 		DisableRelayTx:    cfg.BlocksOnly,
 		ProtocolVersion:   peer.MaxProtocolVersion,
+		TrickleInterval:   cfg.TrickleInterval,
 	}
 }
 
