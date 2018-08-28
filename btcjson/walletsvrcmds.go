@@ -586,7 +586,7 @@ type SignRawTransactionCmd struct {
 	RawTx    string
 	Inputs   *[]RawTxInput
 	PrivKeys *[]string
-	Flags    *string `jsonrpcdefault:"\"ALL\""`
+	Flags    *string `jsonrpcdefault:"\"ALL|FORKID\""`
 }
 
 // NewSignRawTransactionCmd returns a new instance which can be used to issue a

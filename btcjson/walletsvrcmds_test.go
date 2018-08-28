@@ -1081,7 +1081,7 @@ func TestWalletSvrCmds(t *testing.T) {
 				RawTx:    "001122",
 				Inputs:   nil,
 				PrivKeys: nil,
-				Flags:    btcjson.String("ALL"),
+				Flags:    btcjson.String("ALL|FORKID"),
 			},
 		},
 		{
@@ -1115,7 +1115,7 @@ func TestWalletSvrCmds(t *testing.T) {
 					},
 				},
 				PrivKeys: nil,
-				Flags:    btcjson.String("ALL"),
+				Flags:    btcjson.String("ALL|FORKID"),
 			},
 		},
 		{
@@ -1133,26 +1133,26 @@ func TestWalletSvrCmds(t *testing.T) {
 				RawTx:    "001122",
 				Inputs:   &[]btcjson.RawTxInput{},
 				PrivKeys: &[]string{"abc"},
-				Flags:    btcjson.String("ALL"),
+				Flags:    btcjson.String("ALL|FORKID"),
 			},
 		},
 		{
 			name: "signrawtransaction optional3",
 			newCmd: func() (interface{}, error) {
-				return btcjson.NewCmd("signrawtransaction", "001122", `[]`, `[]`, "ALL")
+				return btcjson.NewCmd("signrawtransaction", "001122", `[]`, `[]`, "ALL|FORKID")
 			},
 			staticCmd: func() interface{} {
 				txInputs := []btcjson.RawTxInput{}
 				privKeys := []string{}
 				return btcjson.NewSignRawTransactionCmd("001122", &txInputs, &privKeys,
-					btcjson.String("ALL"))
+					btcjson.String("ALL|FORKID"))
 			},
-			marshalled: `{"jsonrpc":"1.0","method":"signrawtransaction","params":["001122",[],[],"ALL"],"id":1}`,
+			marshalled: `{"jsonrpc":"1.0","method":"signrawtransaction","params":["001122",[],[],"ALL|FORKID"],"id":1}`,
 			unmarshalled: &btcjson.SignRawTransactionCmd{
 				RawTx:    "001122",
 				Inputs:   &[]btcjson.RawTxInput{},
 				PrivKeys: &[]string{},
-				Flags:    btcjson.String("ALL"),
+				Flags:    btcjson.String("ALL|FORKID"),
 			},
 		},
 		{
