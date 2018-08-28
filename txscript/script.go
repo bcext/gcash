@@ -432,18 +432,21 @@ func calcSignatureHash(script []parsedOpcode, hashType SigHashType, tx *wire.Msg
 			hashOutputs = calcHashOutputs(tx)
 		} else if hashType.getBaseType() == SigHashSingle &&
 			idx < len(tx.TxOut) {
-			buf := bytes.NewBuffer(make([]byte, 0, tx.TxOut[idx].SerializeSize()))
-			err := wire.WriteTxOut(buf, 0, 0, tx.TxOut[idx])
-			if err != nil {
-				// TODO the function caller should deal with this error
-				return nil
-			}
-
-			hashOutputs = chainhash.DoubleHashH(buf.Bytes())
+			var b bytes.Buffer
+			wire.WriteTxOut(&b, 0, 0, tx.TxOut[idx])
+			hashOutputs = chainhash.DoubleHashH(b.Bytes())
 		}
-		_ = hashOutputs
 
-		ret := bytes.NewBuffer(nil)
+		sigScript, _ := unparseScript(script)
+		varLen := wire.VarIntSerializeSize(uint64(len(sigScript)))
+
+		// calculate buffer size: 4 bytes version + 32 bytes hashPrevouts
+		// + 32 bytes hashSequence + 32 bytes previousHash + 4 bytes PreviousIndex
+		// + script length indicator + script length + 8 bytes amount
+		// + 4 bytes sequence + 32 bytes hashOutput + 4 bytes locktime
+		// + 4 bytes hashType
+		container := make([]byte, 0, 156+varLen+len(sigScript))
+		ret := bytes.NewBuffer(container)
 		// version
 		var buf4Bytes [4]byte
 		binary.LittleEndian.PutUint32(buf4Bytes[:], uint32(tx.Version))
@@ -460,7 +463,6 @@ func calcSignatureHash(script []parsedOpcode, hashType SigHashType, tx *wire.Msg
 		binary.LittleEndian.PutUint32(buf4Bytes[:], tx.TxIn[idx].PreviousOutPoint.Index)
 		ret.Write(buf4Bytes[:])
 
-		sigScript, _ := unparseScript(script)
 		wire.WriteVarInt(ret, 0, uint64(len(sigScript)))
 		ret.Write(sigScript)
 
