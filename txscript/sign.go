@@ -214,7 +214,7 @@ func mergeScripts(chainParams *chaincfg.Params, tx *wire.MsgTx, idx int,
 		finalScript, _ := builder.Script()
 		return finalScript
 	case MultiSigTy:
-		return mergeMultiSig(tx, idx, hashType, amount, addresses,
+		return mergeMultiSig(tx, idx, amount, addresses,
 			nRequired, pkScript, sigScript, prevScript)
 
 	// It doesn't actually make sense to merge anything other than multiig
@@ -237,9 +237,9 @@ func mergeScripts(chainParams *chaincfg.Params, tx *wire.MsgTx, idx int,
 // pkScript. Since this function is internal only we assume that the arguments
 // have come from other functions internally and thus are all consistent with
 // each other, behaviour is undefined if this contract is broken.
-func mergeMultiSig(tx *wire.MsgTx, idx int, hashType SigHashType,
-	amount cashutil.Amount, addresses []cashutil.Address,
-	nRequired int, pkScript, sigScript, prevScript []byte) []byte {
+func mergeMultiSig(tx *wire.MsgTx, idx int, amount cashutil.Amount,
+	addresses []cashutil.Address, nRequired int, pkScript, sigScript,
+	prevScript []byte) []byte {
 
 	// This is an internal only function and we already parsed this script
 	// as ok for multisig (this is how we got here), so if this fails then
