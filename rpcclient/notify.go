@@ -183,19 +183,19 @@ type NotificationHandlers struct {
 	// gcash.
 	//
 	// This will only be available when client is connected to a wallet
-	// server such as btcwallet.
+	// server such as cashwallet.
 	OnBtcdConnected func(connected bool)
 
 	// OnAccountBalance is invoked with account balance updates.
 	//
 	// This will only be available when speaking to a wallet server
-	// such as btcwallet.
+	// such as cashwallet.
 	OnAccountBalance func(account string, balance cashutil.Amount, confirmed bool)
 
 	// OnWalletLockState is invoked when a wallet is locked or unlocked.
 	//
 	// This will only be available when client is connected to a wallet
-	// server such as btcwallet.
+	// server such as cashwallet.
 	OnWalletLockState func(locked bool)
 
 	// OnUnknownNotification is invoked when an unrecognized notification
@@ -776,7 +776,7 @@ func parseTxAcceptedVerboseNtfnParams(params []json.RawMessage) (*btcjson.TxRawR
 }
 
 // parseBtcdConnectedNtfnParams parses out the connection status of gcash
-// and btcwallet from the parameters of a gcashconnected notification.
+// and cashwallet from the parameters of a gcashconnected notification.
 func parseBtcdConnectedNtfnParams(params []json.RawMessage) (bool, error) {
 	if len(params) != 1 {
 		return false, wrongNumParams(len(params))

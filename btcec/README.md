@@ -1,7 +1,7 @@
 btcec
 =====
 
-[![Build Status](https://travis-ci.org/btcsuite/btcd.png?branch=master)](https://travis-ci.org/btcsuite/btcec)
+[![Build Status](https://travis-ci.org/bcext/gcash.png?branch=master)](https://travis-ci.org/bcext/btcec)
 [![ISC License](http://img.shields.io/badge/license-ISC-blue.svg)](http://copyfree.org)
 [![GoDoc](https://godoc.org/github.com/bcext/gcash/btcec?status.png)](http://godoc.org/github.com/bcext/gcash/btcec)
 

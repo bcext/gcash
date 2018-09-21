@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 
 // NOTE: This file is intended to house the RPC commands that are supported by
-// a wallet server with btcwallet extensions.
+// a wallet server with cashwallet extensions.
 
 package btcjson
 

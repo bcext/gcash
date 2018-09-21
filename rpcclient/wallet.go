@@ -2192,13 +2192,13 @@ func (c *Client) GetInfo() (*btcjson.InfoWalletResult, error) {
 	return c.GetInfoAsync().Receive()
 }
 
-// TODO(davec): Implement
-// backupwallet (NYI in btcwallet)
-// encryptwallet (Won't be supported by btcwallet since it's always encrypted)
-// getwalletinfo (NYI in btcwallet or btcjson)
-// listaddressgroupings (NYI in btcwallet)
-// listreceivedbyaccount (NYI in btcwallet)
+// TODO(qshuai): Implement
+// backupwallet (NYI in cashwallet)
+// encryptwallet (Won't be supported by cashwallet since it's always encrypted)
+// getwalletinfo (NYI in cashwallet or btcjson)
+// listaddressgroupings (NYI in cashwallet)
+// listreceivedbyaccount (NYI in cashwallet)
 
 // DUMP
-// importwallet (NYI in btcwallet)
-// dumpwallet (NYI in btcwallet)
+// importwallet (NYI in cashwallet)
+// dumpwallet (NYI in cashwallet)

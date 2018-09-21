@@ -27,8 +27,8 @@ func main() {
 		},
 	}
 
-	// Connect to local btcwallet RPC server using websockets.
-	certHomeDir := cashutil.AppDataDir("btcwallet", false)
+	// Connect to local cashwallet RPC server using websockets.
+	certHomeDir := cashutil.AppDataDir("cashwallet", false)
 	certs, err := ioutil.ReadFile(filepath.Join(certHomeDir, "rpc.cert"))
 	if err != nil {
 		log.Fatal(err)

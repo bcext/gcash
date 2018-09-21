@@ -28,11 +28,11 @@ const (
 var (
 	gcashHomeDir          = cashutil.AppDataDir("gcash", false)
 	gctlHomeDir           = cashutil.AppDataDir("gctl", false)
-	btcwalletHomeDir      = cashutil.AppDataDir("cashwallet", false)
+	cashwalletHomeDir     = cashutil.AppDataDir("cashwallet", false)
 	defaultConfigFile     = filepath.Join(gctlHomeDir, "gctl.conf")
 	defaultRPCServer      = "localhost"
 	defaultRPCCertFile    = filepath.Join(gcashHomeDir, "rpc.cert")
-	defaultWalletCertFile = filepath.Join(btcwalletHomeDir, "rpc.cert")
+	defaultWalletCertFile = filepath.Join(cashwalletHomeDir, "rpc.cert")
 )
 
 // listCommands categorizes and lists all of the usable commands along with
@@ -214,7 +214,7 @@ func loadConfig() (*config, []string, error) {
 		// Use config file for RPC server to create default gctl config
 		var serverConfigPath string
 		if preCfg.Wallet {
-			serverConfigPath = filepath.Join(btcwalletHomeDir, "btcwallet.conf")
+			serverConfigPath = filepath.Join(cashwalletHomeDir, "btcwallet.conf")
 		} else {
 			serverConfigPath = filepath.Join(gcashHomeDir, "gcash.conf")
 		}
@@ -281,7 +281,7 @@ func loadConfig() (*config, []string, error) {
 
 // createDefaultConfig creates a basic config file at the given destination path.
 // For this it tries to read the config file for the RPC server (either gcash or
-// btcwallet), and extract the RPC user and password from it.
+// cashwallet), and extract the RPC user and password from it.
 func createDefaultConfigFile(destinationPath, serverConfigPath string) error {
 	// Read the RPC server config
 	serverConfigFile, err := os.Open(serverConfigPath)
