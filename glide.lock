@@ -4,7 +4,7 @@ imports:
 - name: github.com/aead/siphash
   version: e404fcfc888570cadd1610538e2dbc89f66af814
 - name: github.com/bcext/cashutil
-  version: 607fe08061c98889af9599009e62774092d2cf06
+  version: 9ba6cf2922836010e02658df743533b995b0d947
   subpackages:
   - base58
   - bloom

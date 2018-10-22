@@ -2,7 +2,7 @@ package: github.com/bcext/gcash
 import:
 - package: github.com/btcsuite/btclog
 - package: github.com/bcext/cashutil
-  version: 607fe08061c98889af9599009e62774092d2cf06
+  version: 9ba6cf2922836010e02658df743533b995b0d947
   subpackages:
   - bloom
   - hdkeychain
