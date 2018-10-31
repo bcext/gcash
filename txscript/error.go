@@ -180,6 +180,72 @@ const (
 	// DER signature.
 	ErrSigDER
 
+	// ErrSigTooShort is returned when a signature that should be a
+	// canonically-encoded DER signature is too short.
+	ErrSigTooShort
+
+	// ErrSigTooLong is returned when a signature that should be a
+	// canonically-encoded DER signature is too long.
+	ErrSigTooLong
+
+	// ErrSigInvalidSeqID is returned when a signature that should be a
+	// canonically-encoded DER signature does not have the expected ASN.1
+	// sequence ID.
+	ErrSigInvalidSeqID
+
+	// ErrSigInvalidDataLen is returned a signature that should be a
+	// canonically-encoded DER signature does not specify the correct number
+	// of remaining bytes for the R and S portions.
+	ErrSigInvalidDataLen
+
+	// ErrSigMissingSTypeID is returned a signature that should be a
+	// canonically-encoded DER signature does not provide the ASN.1 type ID
+	// for S.
+	ErrSigMissingSTypeID
+
+	// ErrSigMissingSLen is returned when a signature that should be a
+	// canonically-encoded DER signature does not provide the length of S.
+	ErrSigMissingSLen
+
+	// ErrSigInvalidSLen is returned a signature that should be a
+	// canonically-encoded DER signature does not specify the correct number
+	// of bytes for the S portion.
+	ErrSigInvalidSLen
+
+	// ErrSigInvalidRIntID is returned when a signature that should be a
+	// canonically-encoded DER signature does not have the expected ASN.1
+	// integer ID for R.
+	ErrSigInvalidRIntID
+
+	// ErrSigZeroRLen is returned when a signature that should be a
+	// canonically-encoded DER signature has an R length of zero.
+	ErrSigZeroRLen
+
+	// ErrSigNegativeR is returned when a signature that should be a
+	// canonically-encoded DER signature has a negative value for R.
+	ErrSigNegativeR
+
+	// ErrSigTooMuchRPadding is returned when a signature that should be a
+	// canonically-encoded DER signature has too much padding for R.
+	ErrSigTooMuchRPadding
+
+	// ErrSigInvalidSIntID is returned when a signature that should be a
+	// canonically-encoded DER signature does not have the expected ASN.1
+	// integer ID for S.
+	ErrSigInvalidSIntID
+
+	// ErrSigZeroSLen is returned when a signature that should be a
+	// canonically-encoded DER signature has an S length of zero.
+	ErrSigZeroSLen
+
+	// ErrSigNegativeS is returned when a signature that should be a
+	// canonically-encoded DER signature has a negative value for S.
+	ErrSigNegativeS
+
+	// ErrSigTooMuchSPadding is returned when a signature that should be a
+	// canonically-encoded DER signature has too much padding for S.
+	ErrSigTooMuchSPadding
+
 	// ErrSigHighS is returned when the ScriptVerifyLowS flag is set and the
 	// script contains any signatures whose S values are higher than the
 	// half order.
@@ -303,6 +369,74 @@ var errorCodeStrings = map[ErrorCode]string{
 	ErrScriptDivByZero:          "ErrScriptDivByZero",
 	ErrScriptModByZero:          "ErrScriptModByZero",
 	ErrScriptCheckDataSigVerify: "ErrScriptCheckDataSigVerify",
+
+	// TODO remove
+	/*=======
+		ErrInternal:                           "ErrInternal",
+		ErrInvalidFlags:                       "ErrInvalidFlags",
+		ErrInvalidIndex:                       "ErrInvalidIndex",
+		ErrUnsupportedAddress:                 "ErrUnsupportedAddress",
+		ErrNotMultisigScript:                  "ErrNotMultisigScript",
+		ErrTooManyRequiredSigs:                "ErrTooManyRequiredSigs",
+		ErrTooMuchNullData:                    "ErrTooMuchNullData",
+		ErrEarlyReturn:                        "ErrEarlyReturn",
+		ErrEmptyStack:                         "ErrEmptyStack",
+		ErrEvalFalse:                          "ErrEvalFalse",
+		ErrScriptUnfinished:                   "ErrScriptUnfinished",
+		ErrInvalidProgramCounter:              "ErrInvalidProgramCounter",
+		ErrScriptTooBig:                       "ErrScriptTooBig",
+		ErrElementTooBig:                      "ErrElementTooBig",
+		ErrTooManyOperations:                  "ErrTooManyOperations",
+		ErrStackOverflow:                      "ErrStackOverflow",
+		ErrInvalidPubKeyCount:                 "ErrInvalidPubKeyCount",
+		ErrInvalidSignatureCount:              "ErrInvalidSignatureCount",
+		ErrNumberTooBig:                       "ErrNumberTooBig",
+		ErrVerify:                             "ErrVerify",
+		ErrEqualVerify:                        "ErrEqualVerify",
+		ErrNumEqualVerify:                     "ErrNumEqualVerify",
+		ErrCheckSigVerify:                     "ErrCheckSigVerify",
+		ErrCheckMultiSigVerify:                "ErrCheckMultiSigVerify",
+		ErrDisabledOpcode:                     "ErrDisabledOpcode",
+		ErrReservedOpcode:                     "ErrReservedOpcode",
+		ErrMalformedPush:                      "ErrMalformedPush",
+		ErrInvalidStackOperation:              "ErrInvalidStackOperation",
+		ErrUnbalancedConditional:              "ErrUnbalancedConditional",
+		ErrMinimalData:                        "ErrMinimalData",
+		ErrInvalidSigHashType:                 "ErrInvalidSigHashType",
+		ErrSigTooShort:                        "ErrSigTooShort",
+		ErrSigTooLong:                         "ErrSigTooLong",
+		ErrSigInvalidSeqID:                    "ErrSigInvalidSeqID",
+		ErrSigInvalidDataLen:                  "ErrSigInvalidDataLen",
+		ErrSigMissingSTypeID:                  "ErrSigMissingSTypeID",
+		ErrSigMissingSLen:                     "ErrSigMissingSLen",
+		ErrSigInvalidSLen:                     "ErrSigInvalidSLen",
+		ErrSigInvalidRIntID:                   "ErrSigInvalidRIntID",
+		ErrSigZeroRLen:                        "ErrSigZeroRLen",
+		ErrSigNegativeR:                       "ErrSigNegativeR",
+		ErrSigTooMuchRPadding:                 "ErrSigTooMuchRPadding",
+		ErrSigInvalidSIntID:                   "ErrSigInvalidSIntID",
+		ErrSigZeroSLen:                        "ErrSigZeroSLen",
+		ErrSigNegativeS:                       "ErrSigNegativeS",
+		ErrSigTooMuchSPadding:                 "ErrSigTooMuchSPadding",
+		ErrSigHighS:                           "ErrSigHighS",
+		ErrNotPushOnly:                        "ErrNotPushOnly",
+		ErrSigNullDummy:                       "ErrSigNullDummy",
+		ErrPubKeyType:                         "ErrPubKeyType",
+		ErrCleanStack:                         "ErrCleanStack",
+		ErrNullFail:                           "ErrNullFail",
+		ErrDiscourageUpgradableNOPs:           "ErrDiscourageUpgradableNOPs",
+		ErrNegativeLockTime:                   "ErrNegativeLockTime",
+		ErrUnsatisfiedLockTime:                "ErrUnsatisfiedLockTime",
+		ErrWitnessProgramEmpty:                "ErrWitnessProgramEmpty",
+		ErrWitnessProgramMismatch:             "ErrWitnessProgramMismatch",
+		ErrWitnessProgramWrongLength:          "ErrWitnessProgramWrongLength",
+		ErrWitnessMalleated:                   "ErrWitnessMalleated",
+		ErrWitnessMalleatedP2SH:               "ErrWitnessMalleatedP2SH",
+		ErrWitnessUnexpected:                  "ErrWitnessUnexpected",
+		ErrMinimalIf:                          "ErrMinimalIf",
+		ErrWitnessPubKeyType:                  "ErrWitnessPubKeyType",
+		ErrDiscourageUpgradableWitnessProgram: "ErrDiscourageUpgradableWitnessProgram",
+	>>>>>>> btcd*/
 }
 
 // String returns the ErrorCode as a human-readable name.
