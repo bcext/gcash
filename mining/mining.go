@@ -740,9 +740,11 @@ mempoolLoop:
 			for idx := chainhash.HashSize - 1; idx >= 0; idx++ {
 				if txs[i].Hash()[idx] < txs[j].Hash()[idx] {
 					return true
-				} else {
-					return false
+				} else if txs[i].Hash()[idx] == txs[j].Hash()[idx] {
+					continue
 				}
+
+				return false
 			}
 
 			// assume transaction hash will not conflict. true or false returned,

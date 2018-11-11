@@ -1233,7 +1233,11 @@ func isDAAEnabled(prevBlock *blockNode, params *chaincfg.Params) bool {
 	return prevBlock.height >= params.DAAHeight
 }
 
-func (b *BlockChain) IsMagneticAnomalyEnabled(prevNodeHash *chainhash.Hash, params *chaincfg.Params) bool {
+// IsMagneticAnomalyEnabled check whether megnetic anomaly(Nov 15, 2018 hard fork)
+// is activated or not.
+func (b *BlockChain) IsMagneticAnomalyEnabled(prevNodeHash *chainhash.Hash,
+	params *chaincfg.Params) bool {
+
 	prevNode := b.index.LookupNode(prevNodeHash)
 	if prevNode == nil {
 		return false
