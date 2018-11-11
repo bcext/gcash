@@ -442,7 +442,7 @@ func (vm *Engine) checkHashTypeEncoding(hashType SigHashType) error {
 	}
 
 	if forkIDEnabled && !usesForkID {
-		return scriptError(ErrScriptMustUseForkid,
+		return scriptError(ErrScriptMustUseForkID,
 			"sigHashForkid enabled, but sig has not the flag")
 	}
 
@@ -544,19 +544,19 @@ func (vm *Engine) checkSignatureEncoding(sig []byte) error {
 	if sigLen < minSigLen {
 		str := fmt.Sprintf("malformed signature: too short: %d < %d", sigLen,
 			minSigLen)
-		return scriptError(ErrSigTooShort, str)
+		return scriptError(ErrSigDER, str)
 	}
 	if sigLen > maxSigLen {
 		str := fmt.Sprintf("malformed signature: too long: %d > %d", sigLen,
 			maxSigLen)
-		return scriptError(ErrSigTooLong, str)
+		return scriptError(ErrSigDER, str)
 	}
 
 	// The signature must start with the ASN.1 sequence identifier.
 	if sig[sequenceOffset] != asn1SequenceID {
 		str := fmt.Sprintf("malformed signature: format has wrong type: %#x",
 			sig[sequenceOffset])
-		return scriptError(ErrSigInvalidSeqID, str)
+		return scriptError(ErrSigDER, str)
 	}
 
 	// The signature must indicate the correct amount of data for all elements
@@ -564,7 +564,7 @@ func (vm *Engine) checkSignatureEncoding(sig []byte) error {
 	if int(sig[dataLenOffset]) != sigLen-2 {
 		str := fmt.Sprintf("malformed signature: bad length: %d != %d",
 			sig[dataLenOffset], sigLen-2)
-		return scriptError(ErrSigInvalidDataLen, str)
+		return scriptError(ErrSigDER, str)
 	}
 
 	// Calculate the offsets of the elements related to S and ensure S is inside
@@ -583,11 +583,11 @@ func (vm *Engine) checkSignatureEncoding(sig []byte) error {
 	sLenOffset := sTypeOffset + 1
 	if sTypeOffset >= sigLen {
 		str := "malformed signature: S type indicator missing"
-		return scriptError(ErrSigMissingSTypeID, str)
+		return scriptError(ErrSigDER, str)
 	}
 	if sLenOffset >= sigLen {
 		str := "malformed signature: S length missing"
-		return scriptError(ErrSigMissingSLen, str)
+		return scriptError(ErrSigDER, str)
 	}
 
 	// The lengths of R and S must match the overall length of the signature.
@@ -598,59 +598,59 @@ func (vm *Engine) checkSignatureEncoding(sig []byte) error {
 	sLen := int(sig[sLenOffset])
 	if sOffset+sLen != sigLen {
 		str := "malformed signature: invalid S length"
-		return scriptError(ErrSigInvalidSLen, str)
+		return scriptError(ErrSigDER, str)
 	}
 
 	// R elements must be ASN.1 integers.
 	if sig[rTypeOffset] != asn1IntegerID {
 		str := fmt.Sprintf("malformed signature: R integer marker: %#x != %#x",
 			sig[rTypeOffset], asn1IntegerID)
-		return scriptError(ErrSigInvalidRIntID, str)
+		return scriptError(ErrSigDER, str)
 	}
 
 	// Zero-length integers are not allowed for R.
 	if rLen == 0 {
 		str := "malformed signature: R length is zero"
-		return scriptError(ErrSigZeroRLen, str)
+		return scriptError(ErrSigDER, str)
 	}
 
 	// R must not be negative.
 	if sig[rOffset]&0x80 != 0 {
 		str := "malformed signature: R is negative"
-		return scriptError(ErrSigNegativeR, str)
+		return scriptError(ErrSigDER, str)
 	}
 
 	// Null bytes at the start of R are not allowed, unless R would otherwise be
 	// interpreted as a negative number.
 	if rLen > 1 && sig[rOffset] == 0x00 && sig[rOffset+1]&0x80 == 0 {
 		str := "malformed signature: R value has too much padding"
-		return scriptError(ErrSigTooMuchRPadding, str)
+		return scriptError(ErrSigDER, str)
 	}
 
 	// S elements must be ASN.1 integers.
 	if sig[sTypeOffset] != asn1IntegerID {
 		str := fmt.Sprintf("malformed signature: S integer marker: %#x != %#x",
 			sig[sTypeOffset], asn1IntegerID)
-		return scriptError(ErrSigInvalidSIntID, str)
+		return scriptError(ErrSigDER, str)
 	}
 
 	// Zero-length integers are not allowed for S.
 	if sLen == 0 {
 		str := "malformed signature: S length is zero"
-		return scriptError(ErrSigZeroSLen, str)
+		return scriptError(ErrSigDER, str)
 	}
 
 	// S must not be negative.
 	if sig[sOffset]&0x80 != 0 {
 		str := "malformed signature: S is negative"
-		return scriptError(ErrSigNegativeS, str)
+		return scriptError(ErrSigDER, str)
 	}
 
 	// Null bytes at the start of S are not allowed, unless S would otherwise be
 	// interpreted as a negative number.
 	if sLen > 1 && sig[sOffset] == 0x00 && sig[sOffset+1]&0x80 == 0 {
 		str := "malformed signature: S value has too much padding"
-		return scriptError(ErrSigTooMuchSPadding, str)
+		return scriptError(ErrSigDER, str)
 	}
 
 	// Verify the S value is <= half the order of the curve.  This check is done
@@ -688,7 +688,7 @@ func (vm *Engine) checkDataSignatureEncoding(sig []byte) error {
 	if vm.flags&(ScriptVerifyDERSignatures|ScriptVerifyLowS|ScriptVerifyStrictEncoding) != 0 &&
 		err != nil {
 		if err != nil {
-			return scriptError(ErrSigDER, "not canonically-encoded  DER signature")
+			return scriptError(ErrSigDER, "not canonically-encoded DER signature")
 		}
 	}
 

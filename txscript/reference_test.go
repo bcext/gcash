@@ -195,83 +195,89 @@ func parseExpectedResult(expected string) ([]ErrorCode, error) {
 		return nil, nil
 	case "UNKNOWN_ERROR":
 		return []ErrorCode{ErrNumberTooBig, ErrMinimalData}, nil
-	case "PUBKEYTYPE":
-		return []ErrorCode{ErrPubKeyType}, nil
-	case "SIG_DER":
-		return []ErrorCode{ErrSigTooShort, ErrSigTooLong,
-			ErrSigInvalidSeqID, ErrSigInvalidDataLen, ErrSigMissingSTypeID,
-			ErrSigMissingSLen, ErrSigInvalidSLen,
-			ErrSigInvalidRIntID, ErrSigZeroRLen, ErrSigNegativeR,
-			ErrSigTooMuchRPadding, ErrSigInvalidSIntID,
-			ErrSigZeroSLen, ErrSigNegativeS, ErrSigTooMuchSPadding,
-			ErrInvalidSigHashType}, nil
 	case "EVAL_FALSE":
 		return []ErrorCode{ErrEvalFalse, ErrEmptyStack}, nil
-	case "EQUALVERIFY":
-		return []ErrorCode{ErrEqualVerify}, nil
-	case "NULLFAIL":
-		return []ErrorCode{ErrNullFail}, nil
-	case "SIG_HIGH_S":
-		return []ErrorCode{ErrSigHighS}, nil
-	case "SIG_HASHTYPE":
-		return []ErrorCode{ErrInvalidSigHashType}, nil
-	case "SIG_NULLDUMMY":
-		return []ErrorCode{ErrSigNullDummy}, nil
-	case "SIG_PUSHONLY":
-		return []ErrorCode{ErrNotPushOnly}, nil
-	case "CLEANSTACK":
-		return []ErrorCode{ErrCleanStack}, nil
-	case "BAD_OPCODE":
-		return []ErrorCode{ErrReservedOpcode, ErrMalformedPush}, nil
-	case "UNBALANCED_CONDITIONAL":
-		return []ErrorCode{ErrUnbalancedConditional,
-			ErrInvalidStackOperation}, nil
 	case "OP_RETURN":
 		return []ErrorCode{ErrEarlyReturn}, nil
-	case "VERIFY":
-		return []ErrorCode{ErrVerify}, nil
-	case "INVALID_STACK_OPERATION", "INVALID_ALTSTACK_OPERATION":
-		return []ErrorCode{ErrInvalidStackOperation}, nil
-	case "DISABLED_OPCODE":
-		return []ErrorCode{ErrDisabledOpcode}, nil
-	case "DISCOURAGE_UPGRADABLE_NOPS":
-		return []ErrorCode{ErrDiscourageUpgradableNOPs}, nil
+	case "SCRIPT_SIZE":
+		return []ErrorCode{ErrScriptTooBig}, nil
 	case "PUSH_SIZE":
 		return []ErrorCode{ErrElementTooBig}, nil
 	case "OP_COUNT":
 		return []ErrorCode{ErrTooManyOperations}, nil
 	case "STACK_SIZE":
 		return []ErrorCode{ErrStackOverflow}, nil
-	case "SCRIPT_SIZE":
-		return []ErrorCode{ErrScriptTooBig}, nil
-	case "PUBKEY_COUNT":
-		return []ErrorCode{ErrInvalidPubKeyCount}, nil
 	case "SIG_COUNT":
 		return []ErrorCode{ErrInvalidSignatureCount}, nil
-	case "MINIMALDATA":
-		return []ErrorCode{ErrMinimalData}, nil
+	case "PUBKEY_COUNT":
+		return []ErrorCode{ErrInvalidPubKeyCount}, nil
+	case "OPERAND_SIZE":
+		return []ErrorCode{ErrInvalidOperandSize}, nil
+	case "INVALID_NUMBER_RANGE":
+		return []ErrorCode{ErrInvalidNumberRange}, nil
+	case "IMPOSSIBLE_ENCODING":
+		return []ErrorCode{ErrImpossibleEncoding}, nil
+	case "SPLIT_RANGE":
+		return []ErrorCode{ErrInvalidSplitRange}, nil
+	case "VERIFY":
+		return []ErrorCode{ErrVerify}, nil
+	case "EQUALVERIFY":
+		return []ErrorCode{ErrEqualVerify}, nil
+	case "CHECKMULTISIGVERIFY":
+		return []ErrorCode{ErrCheckMultiSigVerify}, nil
+	case "CHECKSIGVERIFY":
+		return []ErrorCode{ErrCheckSigVerify}, nil
+	case "CHECKDATASIGVERIFY":
+		return []ErrorCode{ErrScriptCheckDataSigVerify}, nil
+	case "ErrNumEqualVerify":
+		return []ErrorCode{ErrNumEqualVerify}, nil
+	case "BAD_OPCODE":
+		return []ErrorCode{ErrReservedOpcode, ErrMalformedPush}, nil
+	case "DISABLED_OPCODE":
+		return []ErrorCode{ErrDisabledOpcode}, nil
+	case "INVALID_STACK_OPERATION", "INVALID_ALTSTACK_OPERATION":
+		return []ErrorCode{ErrInvalidStackOperation}, nil
+	case "UNBALANCED_CONDITIONAL":
+		return []ErrorCode{ErrUnbalancedConditional,
+			ErrInvalidStackOperation}, nil
 	case "NEGATIVE_LOCKTIME":
 		return []ErrorCode{ErrNegativeLockTime}, nil
 	case "UNSATISFIED_LOCKTIME":
 		return []ErrorCode{ErrUnsatisfiedLockTime}, nil
+	case "SIG_HASHTYPE":
+		return []ErrorCode{ErrInvalidSigHashType}, nil
+	case "SIG_DER":
+		return []ErrorCode{ErrSigDER}, nil
+	case "MINIMALDATA":
+		return []ErrorCode{ErrMinimalData}, nil
+	case "SIG_PUSHONLY":
+		return []ErrorCode{ErrNotPushOnly}, nil
+	case "SIG_HIGH_S":
+		return []ErrorCode{ErrSigHighS}, nil
+	case "SIG_NULLDUMMY":
+		return []ErrorCode{ErrSigNullDummy}, nil
+	case "PUBKEYTYPE":
+		return []ErrorCode{ErrPubKeyType}, nil
+	case "CLEANSTACK":
+		return []ErrorCode{ErrCleanStack}, nil
+	case "ErrUncompressedPubKey":
+		return []ErrorCode{ErrUncompressedPubKey}, nil
 	case "MINIMALIF":
 		return []ErrorCode{ErrScriptMinimalIf}, nil
+	case "NULLFAIL":
+		return []ErrorCode{ErrNullFail}, nil
+	case "DISCOURAGE_UPGRADABLE_NOPS":
+		return []ErrorCode{ErrDiscourageUpgradableNOPs}, nil
+	case "NONCOMPRESSED_PUBKEY":
+		return []ErrorCode{ErrUncompressedPubKey}, nil
 	case "ILLEGAL_FORKID":
 		return []ErrorCode{ErrScriptIllegalForkID}, nil
-	case "SPLIT_RANGE":
-		return []ErrorCode{ErrInvalidSplitRange}, nil
-	case "INVALID_NUMBER_RANGE":
-		return []ErrorCode{ErrInvalidNumberRange}, nil
+	case "MISSING_FORKID":
+		return []ErrorCode{ErrScriptMustUseForkID}, nil
 	case "DIV_BY_ZERO":
 		return []ErrorCode{ErrScriptDivByZero}, nil
 	case "MOD_BY_ZERO":
 		return []ErrorCode{ErrScriptModByZero}, nil
-	case "OPERAND_SIZE":
-		return []ErrorCode{ErrInvalidOperandSize}, nil
-	case "IMPOSSIBLE_ENCODING":
-		return []ErrorCode{ErrImpossibleEncoding}, nil
-	case "CHECKDATASIGVERIFY":
-		return []ErrorCode{ErrScriptCheckDataSigVerify}, nil
 	}
 
 	return nil, fmt.Errorf("unrecognized expected result in test data: %v",

@@ -2087,10 +2087,10 @@ func opcodeCheckSig(op *parsedOpcode, vm *Engine) error {
 	// requirements enabled by the flags.
 	hashType := SigHashType(fullSigBytes[len(fullSigBytes)-1])
 	sigBytes := fullSigBytes[:len(fullSigBytes)-1]
-	if err := vm.checkHashTypeEncoding(hashType); err != nil {
+	if err := vm.checkSignatureEncoding(sigBytes); err != nil {
 		return err
 	}
-	if err := vm.checkSignatureEncoding(sigBytes); err != nil {
+	if err := vm.checkHashTypeEncoding(hashType); err != nil {
 		return err
 	}
 	if err := vm.checkPubKeyEncoding(pkBytes); err != nil {
@@ -2314,10 +2314,10 @@ func opcodeCheckMultiSig(op *parsedOpcode, vm *Engine) error {
 		// Only parse and check the signature encoding once.
 		var parsedSig *btcec.Signature
 		if !sigInfo.parsed {
-			if err := vm.checkHashTypeEncoding(hashType); err != nil {
+			if err := vm.checkSignatureEncoding(signature); err != nil {
 				return err
 			}
-			if err := vm.checkSignatureEncoding(signature); err != nil {
+			if err := vm.checkHashTypeEncoding(hashType); err != nil {
 				return err
 			}
 

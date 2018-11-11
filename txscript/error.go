@@ -122,6 +122,11 @@ const (
 	// script and the top item on the data stack does not evaluate to true.
 	ErrEqualVerify
 
+	// ErrScriptCheckDataSigVerify is returned when OP_CHECKDATASIGVERIFY
+	// is encountered in a script and the top item on the data stack does
+	// not evaluate to true.
+	ErrScriptCheckDataSigVerify
+
 	// ErrNumEqualVerify is returned when OP_NUMEQUALVERIFY is encountered
 	// in a script and the top item on the data stack does not evaluate to
 	// true.
@@ -294,21 +299,37 @@ const (
 	// reached.
 	ErrUnsatisfiedLockTime
 
+	// ErrUncompressedPubKey is returned when using non-compressed public key
 	ErrUncompressedPubKey
+
+	// ErrInvalidSplitRange is returned when encounter invalid OP_SPLIT range
 	ErrInvalidSplitRange
+
+	// ErrInvalidNumberRange is returned when given operand is not a number
+	// within the valid range [-2^31...2^31]
 	ErrInvalidNumberRange
+
+	// ErrInvalidOperandSize is returned when using invalid operand size
 	ErrInvalidOperandSize
+
+	// ErrImpossibleEncoding is returned when the requested encoding is
+	// impossible to satisfy
 	ErrImpossibleEncoding
 
+	// ErrScriptMinimalIf is returned when OP_IF/NOTIF argument not be minimal
 	ErrScriptMinimalIf
+
+	// ErrScriptIllegalForkID is returned when Illegal use of SIGHASH_FORKID
 	ErrScriptIllegalForkID
 
-	ErrScriptMustUseForkid
+	// ErrScriptMustUseForkid is returned when signature not use SIGHASH_FORKID
+	ErrScriptMustUseForkID
 
+	// ErrScriptDivByZero is returned when division by zero error
 	ErrScriptDivByZero
-	ErrScriptModByZero
 
-	ErrScriptCheckDataSigVerify
+	// ErrScriptModByZero is returned when modulo by zero error
+	ErrScriptModByZero
 
 	// numErrorCodes is the maximum error code number used in tests.  This
 	// entry MUST be the last entry in the enum.
@@ -349,6 +370,21 @@ var errorCodeStrings = map[ErrorCode]string{
 	ErrMinimalData:              "ErrMinimalData",
 	ErrInvalidSigHashType:       "ErrInvalidSigHashType",
 	ErrSigDER:                   "ErrSigDER",
+	ErrSigTooShort:              "ErrSigTooShort",
+	ErrSigTooLong:               "ErrSigTooLong",
+	ErrSigInvalidSeqID:          "ErrSigInvalidSeqID",
+	ErrSigInvalidDataLen:        "ErrSigInvalidDataLen",
+	ErrSigMissingSTypeID:        "ErrSigMissingSTypeID",
+	ErrSigMissingSLen:           "ErrSigMissingSLen",
+	ErrSigInvalidSLen:           "ErrSigInvalidSLen",
+	ErrSigInvalidRIntID:         "ErrSigInvalidRIntID",
+	ErrSigZeroRLen:              "ErrSigZeroRLen",
+	ErrSigNegativeR:             "ErrSigNegativeR",
+	ErrSigTooMuchRPadding:       "ErrSigTooMuchRPadding",
+	ErrSigInvalidSIntID:         "ErrSigInvalidSIntID",
+	ErrSigZeroSLen:              "ErrSigZeroSLen",
+	ErrSigNegativeS:             "ErrSigNegativeS",
+	ErrSigTooMuchSPadding:       "ErrSigTooMuchSPadding",
 	ErrSigHighS:                 "ErrSigHighS",
 	ErrNotPushOnly:              "ErrNotPushOnly",
 	ErrSigNullDummy:             "ErrSigNullDummy",
@@ -365,78 +401,10 @@ var errorCodeStrings = map[ErrorCode]string{
 	ErrInvalidOperandSize:       "ErrInvalidOperandSize",
 	ErrImpossibleEncoding:       "ErrImpossibleEncoding",
 	ErrScriptIllegalForkID:      "ErrScriptIllegalForkID",
-	ErrScriptMustUseForkid:      "ErrScriptMustUseForkid",
+	ErrScriptMustUseForkID:      "ErrScriptMustUseForkID",
 	ErrScriptDivByZero:          "ErrScriptDivByZero",
 	ErrScriptModByZero:          "ErrScriptModByZero",
 	ErrScriptCheckDataSigVerify: "ErrScriptCheckDataSigVerify",
-
-	// TODO remove
-	/*=======
-		ErrInternal:                           "ErrInternal",
-		ErrInvalidFlags:                       "ErrInvalidFlags",
-		ErrInvalidIndex:                       "ErrInvalidIndex",
-		ErrUnsupportedAddress:                 "ErrUnsupportedAddress",
-		ErrNotMultisigScript:                  "ErrNotMultisigScript",
-		ErrTooManyRequiredSigs:                "ErrTooManyRequiredSigs",
-		ErrTooMuchNullData:                    "ErrTooMuchNullData",
-		ErrEarlyReturn:                        "ErrEarlyReturn",
-		ErrEmptyStack:                         "ErrEmptyStack",
-		ErrEvalFalse:                          "ErrEvalFalse",
-		ErrScriptUnfinished:                   "ErrScriptUnfinished",
-		ErrInvalidProgramCounter:              "ErrInvalidProgramCounter",
-		ErrScriptTooBig:                       "ErrScriptTooBig",
-		ErrElementTooBig:                      "ErrElementTooBig",
-		ErrTooManyOperations:                  "ErrTooManyOperations",
-		ErrStackOverflow:                      "ErrStackOverflow",
-		ErrInvalidPubKeyCount:                 "ErrInvalidPubKeyCount",
-		ErrInvalidSignatureCount:              "ErrInvalidSignatureCount",
-		ErrNumberTooBig:                       "ErrNumberTooBig",
-		ErrVerify:                             "ErrVerify",
-		ErrEqualVerify:                        "ErrEqualVerify",
-		ErrNumEqualVerify:                     "ErrNumEqualVerify",
-		ErrCheckSigVerify:                     "ErrCheckSigVerify",
-		ErrCheckMultiSigVerify:                "ErrCheckMultiSigVerify",
-		ErrDisabledOpcode:                     "ErrDisabledOpcode",
-		ErrReservedOpcode:                     "ErrReservedOpcode",
-		ErrMalformedPush:                      "ErrMalformedPush",
-		ErrInvalidStackOperation:              "ErrInvalidStackOperation",
-		ErrUnbalancedConditional:              "ErrUnbalancedConditional",
-		ErrMinimalData:                        "ErrMinimalData",
-		ErrInvalidSigHashType:                 "ErrInvalidSigHashType",
-		ErrSigTooShort:                        "ErrSigTooShort",
-		ErrSigTooLong:                         "ErrSigTooLong",
-		ErrSigInvalidSeqID:                    "ErrSigInvalidSeqID",
-		ErrSigInvalidDataLen:                  "ErrSigInvalidDataLen",
-		ErrSigMissingSTypeID:                  "ErrSigMissingSTypeID",
-		ErrSigMissingSLen:                     "ErrSigMissingSLen",
-		ErrSigInvalidSLen:                     "ErrSigInvalidSLen",
-		ErrSigInvalidRIntID:                   "ErrSigInvalidRIntID",
-		ErrSigZeroRLen:                        "ErrSigZeroRLen",
-		ErrSigNegativeR:                       "ErrSigNegativeR",
-		ErrSigTooMuchRPadding:                 "ErrSigTooMuchRPadding",
-		ErrSigInvalidSIntID:                   "ErrSigInvalidSIntID",
-		ErrSigZeroSLen:                        "ErrSigZeroSLen",
-		ErrSigNegativeS:                       "ErrSigNegativeS",
-		ErrSigTooMuchSPadding:                 "ErrSigTooMuchSPadding",
-		ErrSigHighS:                           "ErrSigHighS",
-		ErrNotPushOnly:                        "ErrNotPushOnly",
-		ErrSigNullDummy:                       "ErrSigNullDummy",
-		ErrPubKeyType:                         "ErrPubKeyType",
-		ErrCleanStack:                         "ErrCleanStack",
-		ErrNullFail:                           "ErrNullFail",
-		ErrDiscourageUpgradableNOPs:           "ErrDiscourageUpgradableNOPs",
-		ErrNegativeLockTime:                   "ErrNegativeLockTime",
-		ErrUnsatisfiedLockTime:                "ErrUnsatisfiedLockTime",
-		ErrWitnessProgramEmpty:                "ErrWitnessProgramEmpty",
-		ErrWitnessProgramMismatch:             "ErrWitnessProgramMismatch",
-		ErrWitnessProgramWrongLength:          "ErrWitnessProgramWrongLength",
-		ErrWitnessMalleated:                   "ErrWitnessMalleated",
-		ErrWitnessMalleatedP2SH:               "ErrWitnessMalleatedP2SH",
-		ErrWitnessUnexpected:                  "ErrWitnessUnexpected",
-		ErrMinimalIf:                          "ErrMinimalIf",
-		ErrWitnessPubKeyType:                  "ErrWitnessPubKeyType",
-		ErrDiscourageUpgradableWitnessProgram: "ErrDiscourageUpgradableWitnessProgram",
-	>>>>>>> btcd*/
 }
 
 // String returns the ErrorCode as a human-readable name.
