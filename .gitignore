@@ -17,6 +17,7 @@ btcd.db
 *.o
 *.a
 *.so
+gcash
 
 # Folders
 _obj
