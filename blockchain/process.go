@@ -165,6 +165,12 @@ func (b *BlockChain) ProcessBlock(block *cashutil.Block, flags BehaviorFlags) (b
 		return false, false, ruleError(ErrDuplicateBlock, str)
 	}
 
+	if b.IsMagneticAnomalyEnabled(&block.MsgBlock().Header.PrevBlock, b.chainParams) {
+		if !checkCTORStored(block.MsgBlock().Transactions[1:]) {
+			return false, false, ruleError(ErrCTORsort, "transaction order is invalid")
+		}
+	}
+
 	// Perform preliminary sanity checks on the block and its transactions.
 	err = checkBlockSanity(block, b.chainParams.PowLimit, b.timeSource, flags)
 	if err != nil {

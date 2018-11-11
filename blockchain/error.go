@@ -206,6 +206,10 @@ const (
 	// current chain tip. This is not a block validation rule, but is required
 	// for block proposals submitted via getblocktemplate RPC.
 	ErrPrevBlockNotBest
+
+	// ErrCTORsort indicates that transactions in block are not according to
+	// CTOR sorted.
+	ErrCTORsort
 )
 
 // Map of ErrorCode values back to their constant names for pretty printing.
@@ -250,6 +254,7 @@ var errorCodeStrings = map[ErrorCode]string{
 	ErrPreviousBlockUnknown:  "ErrPreviousBlockUnknown",
 	ErrInvalidAncestorBlock:  "ErrInvalidAncestorBlock",
 	ErrPrevBlockNotBest:      "ErrPrevBlockNotBest",
+	ErrCTORsort:              "ErrCTORsort",
 }
 
 // String returns the ErrorCode as a human-readable name.

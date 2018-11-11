@@ -407,6 +407,29 @@ func checkBlockHeaderSanity(header *wire.BlockHeader, powLimit *big.Int, timeSou
 	return nil
 }
 
+// checkCTORsequence checks transactions in block whether sorted according to CTOR
+// or not.
+func checkCTORStored(txes []*wire.MsgTx) bool {
+	if len(txes) == 0 {
+		return true
+	}
+
+	iter := txes[0]
+	for _, tx := range txes[1:] {
+		for i := chainhash.HashSize; i >= 0; i++ {
+			if tx.TxHash()[i] < iter.TxHash()[i] {
+				return false
+			} else if tx.TxHash()[i] > iter.TxHash()[i] {
+				break
+			}
+		}
+
+		iter = tx
+	}
+
+	return true
+}
+
 // checkBlockSanity performs some preliminary checks on a block to ensure it is
 // sane before continuing with block processing.  These checks are context free.
 //
