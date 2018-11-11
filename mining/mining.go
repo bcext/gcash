@@ -8,6 +8,7 @@ package mining
 import (
 	"container/heap"
 	"fmt"
+	"sort"
 	"time"
 
 	"github.com/bcext/cashutil"
@@ -595,6 +596,7 @@ mempoolLoop:
 	blockSigOpCost := coinbaseSigOpCost
 	totalFees := int64(0)
 
+	sortRecord := make(map[chainhash.Hash]int)
 	// Choose which transactions make it into the block.
 	for priorityQueue.Len() > 0 {
 		// Grab the highest priority (or highest fee per kilobyte
@@ -706,6 +708,10 @@ mempoolLoop:
 		txFees = append(txFees, prioItem.fee)
 		txSigOpCosts = append(txSigOpCosts, int64(sigOpCost))
 
+		// record the index of transaction in array according to txFees,
+		// because the tx, fee and sigOpCost with the same order.
+		sortRecord[*tx.Hash()] = len(txFees) - 1
+
 		log.Tracef("Adding tx %s (priority %.2f, feePerKB %.2f)",
 			prioItem.tx.Hash(), prioItem.priority, prioItem.feePerKB)
 
@@ -726,6 +732,35 @@ mempoolLoop:
 	// coinbase value with the total fees accordingly.
 	coinbaseTx.MsgTx().TxOut[0].Value += totalFees
 	txFees[0] = -totalFees
+
+	// [CTOR]sort transaction according to the its hash.
+	if g.chain.IsMagneticAnomalyEnabled(&best.Hash, g.chainParams) {
+		txs := blockTxns[1:]
+		sort.SliceStable(txs, func(i, j int) bool {
+			for idx := chainhash.HashSize - 1; idx >= 0; idx++ {
+				if txs[i].Hash()[idx] < txs[j].Hash()[idx] {
+					return true
+				} else {
+					return false
+				}
+			}
+
+			// assume transaction hash will not conflict. true or false returned,
+			// both ok.
+			return true
+		})
+		blockTxns = append(blockTxns[:1], txs...)
+		// here sort the txFees and txSigOpCosts make them matched with transaction.
+		sortTxFees := make([]int64, len(txFees))
+		sortTxFees[0] = txFees[0]
+		sortTxSigOpCosts := make([]int64, len(txSigOpCosts))
+		sortTxSigOpCosts[0] = txSigOpCosts[0]
+		for i, tx := range blockTxns[1:] {
+			offset := sortRecord[*tx.Hash()]
+			sortTxFees[i+1] = txFees[offset]
+			sortTxSigOpCosts[i+1] = txSigOpCosts[offset]
+		}
+	}
 
 	// Calculate the next expected block version based on the state of the
 	// rule change deployments.

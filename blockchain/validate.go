@@ -1123,7 +1123,7 @@ func (b *BlockChain) checkConnectBlock(node *blockNode, block *cashutil.Block, v
 	// transactions using the OP_CHECKDATASIG opcode and it's verify
 	// alternative. We also start enforcing push only signatures and
 	// clean stack.
-	if isMagneticAnomalyEnabled(node.parent, b.chainParams) {
+	if b.IsMagneticAnomalyEnabled(&node.parent.hash, b.chainParams) {
 		scriptFlags |= txscript.ScriptEnableCheckDataSig
 		scriptFlags |= txscript.ScriptVerifySigPushOnly
 		scriptFlags |= txscript.ScriptVerifyCleanStack
@@ -1210,7 +1210,8 @@ func isDAAEnabled(prevBlock *blockNode, params *chaincfg.Params) bool {
 	return prevBlock.height >= params.DAAHeight
 }
 
-func isMagneticAnomalyEnabled(prevNode *blockNode, params *chaincfg.Params) bool {
+func (b *BlockChain) IsMagneticAnomalyEnabled(prevNodeHash *chainhash.Hash, params *chaincfg.Params) bool {
+	prevNode := b.index.LookupNode(prevNodeHash)
 	if prevNode == nil {
 		return false
 	}
