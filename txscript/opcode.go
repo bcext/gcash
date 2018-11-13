@@ -2641,7 +2641,6 @@ func opcodeCheckDataSig(p *parsedOpcode, vm *Engine) error {
 
 	sig, err := vm.dstack.PopByteArray()
 	if err != nil {
-
 		return err
 	}
 

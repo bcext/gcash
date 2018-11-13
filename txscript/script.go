@@ -603,6 +603,14 @@ func getSigOpCount(pops []parsedOpcode, precise bool) int {
 			fallthrough
 		case OP_CHECKSIGVERIFY:
 			nSigs++
+		case OP_CHECKDATASIG:
+			fallthrough
+		case OP_CHECKDATASIGVERIFY:
+			// Signature operations accounting for OP_CHECKDATASIG
+			// shall be calculated the same as OP_CHECKSIG. This
+			// means that each OP_CHECKDATASIG shall be counted
+			// as one (1) SigOp
+			nSigs++
 		case OP_CHECKMULTISIG:
 			fallthrough
 		case OP_CHECKMULTISIGVERIFY:
