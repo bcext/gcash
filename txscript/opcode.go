@@ -451,7 +451,7 @@ var opcodeArray = [256]opcode{
 	OP_SIZE:    {OP_SIZE, "OP_SIZE", 1, opcodeSize},
 
 	// Bitwise logic opcodes.
-	OP_INVERT:      {OP_INVERT, "OP_INVERT", 1, opcodeDisabled},
+	OP_INVERT:      {OP_INVERT, "OP_INVERT", 1, opcodeInvert},
 	OP_AND:         {OP_AND, "OP_AND", 1, opcodeAnd},
 	OP_OR:          {OP_OR, "OP_OR", 1, opcodeOr},
 	OP_XOR:         {OP_XOR, "OP_XOR", 1, opcodeXor},
@@ -471,11 +471,11 @@ var opcodeArray = [256]opcode{
 	OP_0NOTEQUAL:          {OP_0NOTEQUAL, "OP_0NOTEQUAL", 1, opcode0NotEqual},
 	OP_ADD:                {OP_ADD, "OP_ADD", 1, opcodeAdd},
 	OP_SUB:                {OP_SUB, "OP_SUB", 1, opcodeSub},
-	OP_MUL:                {OP_MUL, "OP_MUL", 1, opcodeDisabled},
+	OP_MUL:                {OP_MUL, "OP_MUL", 1, opcodeMul},
 	OP_DIV:                {OP_DIV, "OP_DIV", 1, opcodeDiv},
 	OP_MOD:                {OP_MOD, "OP_MOD", 1, opcodeMod},
-	OP_LSHIFT:             {OP_LSHIFT, "OP_LSHIFT", 1, opcodeDisabled},
-	OP_RSHIFT:             {OP_RSHIFT, "OP_RSHIFT", 1, opcodeDisabled},
+	OP_LSHIFT:             {OP_LSHIFT, "OP_LSHIFT", 1, opcodeLshift},
+	OP_RSHIFT:             {OP_RSHIFT, "OP_RSHIFT", 1, opcodeRshift},
 	OP_BOOLAND:            {OP_BOOLAND, "OP_BOOLAND", 1, opcodeBoolAnd},
 	OP_BOOLOR:             {OP_BOOLOR, "OP_BOOLOR", 1, opcodeBoolOr},
 	OP_NUMEQUAL:           {OP_NUMEQUAL, "OP_NUMEQUAL", 1, opcodeNumEqual},
@@ -625,21 +625,17 @@ type parsedOpcode struct {
 // bad to see in the instruction stream (even if turned off by a conditional).
 func (pop *parsedOpcode) isDisabled(flags ScriptFlags) bool {
 	switch pop.opcode.value {
-	case OP_INVERT:
-		return true
 	case OP_2MUL:
 		return true
 	case OP_2DIV:
 		return true
-	case OP_MUL:
-		return true
-	case OP_LSHIFT:
-		return true
-	case OP_RSHIFT:
-		return true
-	default:
-		return false
+	case OP_INVERT, OP_MUL, OP_LSHIFT, OP_RSHIFT:
+		if flags|ScriptEnableMagnetic != 0 {
+			return false
+		}
 	}
+
+	return false
 }
 
 // alwaysIllegal returns whether or not the opcode is always illegal when passed
@@ -1436,6 +1432,30 @@ func opcodeSize(op *parsedOpcode, vm *Engine) error {
 	return nil
 }
 
+// opcodeInvert inverts the top element of the data stack.
+//
+// Stack transformation: [... x1] -> [... ^x1]
+func opcodeInvert(op *parsedOpcode, vm *Engine) error {
+	if vm.dstack.Depth() < 1 {
+		str := "Operation not valid with the current stack size"
+		return scriptError(ErrInvalidStackOperation, str)
+	}
+
+	data, err := vm.dstack.PopByteArray()
+	if err != nil {
+		return err
+	}
+
+	ret := make([]byte, len(data))
+	for i, ele := range data {
+		ret[i] = ^ele
+	}
+
+	vm.dstack.PushByteArray(ret)
+
+	return nil
+}
+
 // opcodeEqual removes the top 2 items of the data stack, compares them as raw
 // bytes, and pushes the result, encoded as a boolean, back to the stack.
 //
@@ -1612,6 +1632,21 @@ func opcodeSub(op *parsedOpcode, vm *Engine) error {
 	return nil
 }
 
+func opcodeMul(op *parsedOpcode, vm *Engine) error {
+	v0, err := vm.dstack.PopInt()
+	if err != nil {
+		return err
+	}
+
+	v1, err := vm.dstack.PopInt()
+	if err != nil {
+		return err
+	}
+
+	vm.dstack.PushInt(v1 * v0)
+	return nil
+}
+
 func opcodeDiv(p *parsedOpcode, vm *Engine) error {
 	v0, err := vm.dstack.PopInt()
 	if err != nil {
@@ -1652,6 +1687,112 @@ func opcodeMod(p *parsedOpcode, vm *Engine) error {
 	vm.dstack.PushInt(bn)
 
 	return nil
+}
+
+func opcodeLshift(p *parsedOpcode, vm *Engine) error {
+	if vm.dstack.Depth() < 2 {
+		str := "Operation not valid with the current stack size"
+		return scriptError(ErrInvalidStackOperation, str)
+	}
+
+	n, err := vm.dstack.PopInt()
+	if err != nil || n < 0 {
+		str := "Given operand is not a number within the valid range [-2^31...2^31]"
+		return scriptError(ErrInvalidNumberRange, str)
+	}
+
+	data, err := vm.dstack.PopByteArray()
+	if err != nil {
+		return err
+	}
+
+	vm.dstack.PushByteArray(lshift(data, int(n.Int32())))
+
+	return nil
+}
+
+func lshift(x []byte, n int) []byte {
+	bitShift := n % 8
+	byteShift := n / 8
+
+	mask := makeLShiftMask(bitShift)
+	overflowMask := ^mask
+
+	ret := make([]byte, len(x))
+	for i := len(x) - 1; i >= 0; i-- {
+		k := i - byteShift
+		if k > 0 {
+			val := x[i] & mask
+			val <<= uint(bitShift)
+			ret[k] |= val
+		}
+
+		if k-1 >= 0 {
+			carryVal := x[i] & overflowMask
+			carryVal >>= uint(8 - bitShift)
+			ret[k-1] |= carryVal
+		}
+	}
+
+	return ret
+}
+
+func makeLShiftMask(n int) byte {
+	mask := []byte{0xFF, 0x7F, 0x3F, 0x1F, 0x0F, 0x07, 0x03, 0x01}
+	return mask[n]
+}
+
+func opcodeRshift(p *parsedOpcode, vm *Engine) error {
+	if vm.dstack.Depth() < 2 {
+		str := "Operation not valid with the current stack size"
+		return scriptError(ErrInvalidStackOperation, str)
+	}
+
+	n, err := vm.dstack.PopInt()
+	if err != nil || n < 0 {
+		str := "Given operand is not a number within the valid range [-2^31...2^31]"
+		return scriptError(ErrInvalidNumberRange, str)
+	}
+
+	data, err := vm.dstack.PopByteArray()
+	if err != nil {
+		return err
+	}
+
+	vm.dstack.PushByteArray(rshift(data, int(n.Int32())))
+
+	return nil
+}
+
+func rshift(x []byte, n int) []byte {
+	bitShift := n % 8
+	byteShift := n / 8
+
+	mask := makeRShiftMask(bitShift)
+	overflowMask := ^mask
+
+	ret := make([]byte, len(x))
+	for i := 0; i < len(x); i++ {
+		k := i + byteShift
+		if k < len(x) {
+			val := x[i] & mask
+			val >>= uint(bitShift)
+			ret[k] |= val
+		}
+
+		if k+1 < len(x) {
+			carryVal := x[i] & overflowMask
+			carryVal <<= uint(8 - bitShift)
+			ret[k+1] |= carryVal
+		}
+	}
+
+	return ret
+}
+
+func makeRShiftMask(n int) byte {
+	mask := []byte{0xFF, 0xFE, 0xFC, 0xF8, 0xF0, 0xE0, 0xC0, 0x80}
+	return mask[n]
 }
 
 // opcodeBoolAnd treats the top two items on the data stack as integers.  When

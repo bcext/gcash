@@ -94,6 +94,9 @@ const (
 
 	// ScriptEnableCheckDataSig defines OP_CHECKDATASIG and variant are enabled.
 	ScriptEnableCheckDataSig
+
+	// Are the Magnetic upgrade opcodes enabled?
+	ScriptEnableMagnetic
 )
 
 const (
