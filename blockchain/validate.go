@@ -416,10 +416,10 @@ func checkCTORStored(txes []*wire.MsgTx) bool {
 
 	iter := txes[0]
 	for _, tx := range txes[1:] {
-		for i := chainhash.HashSize; i >= 0; i++ {
-			if tx.TxHash()[i] < iter.TxHash()[i] {
+		for i := chainhash.HashSize; i > 0; i-- {
+			if tx.TxHash()[i-1] < iter.TxHash()[i-1] {
 				return false
-			} else if tx.TxHash()[i] > iter.TxHash()[i] {
+			} else if tx.TxHash()[i-1] > iter.TxHash()[i-1] {
 				break
 			}
 		}
