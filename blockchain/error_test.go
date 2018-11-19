@@ -32,6 +32,7 @@ func TestErrorCodeStringer(t *testing.T) {
 		{ErrNoTxInputs, "ErrNoTxInputs"},
 		{ErrNoTxOutputs, "ErrNoTxOutputs"},
 		{ErrTxTooBig, "ErrTxTooBig"},
+		{ErrTxTooSmall, "ErrTxTooSmall"},
 		{ErrBadTxOutValue, "ErrBadTxOutValue"},
 		{ErrDuplicateTxInputs, "ErrDuplicateTxInputs"},
 		{ErrBadTxInput, "ErrBadTxInput"},

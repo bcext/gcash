@@ -224,6 +224,12 @@ func CheckTransactionSanity(tx *cashutil.Tx) error {
 		return ruleError(ErrTxTooBig, str)
 	}
 
+	if serializedTxSize < MinTransactionSize {
+		str := fmt.Sprintf("serialized transaction is too small - got"+
+			"%d, min %d", serializedTxSize, MinTransactionSize)
+		return ruleError(ErrTxTooSmall, str)
+	}
+
 	// Ensure the transaction amounts are in range.  Each transaction
 	// output must not be negative or more than the max allowed per
 	// transaction.  Also, the total of all outputs must abide by the same
@@ -375,7 +381,9 @@ func GetSigOpCost(tx *cashutil.Tx) int {
 //
 // The flags do not modify the behavior of this function directly, however they
 // are needed to pass along to checkProofOfWork.
-func checkBlockHeaderSanity(header *wire.BlockHeader, powLimit *big.Int, timeSource MedianTimeSource, flags BehaviorFlags) error {
+func checkBlockHeaderSanity(header *wire.BlockHeader, powLimit *big.Int,
+	timeSource MedianTimeSource, flags BehaviorFlags) error {
+
 	// Ensure the proof of work bits in the block header is in min/max range
 	// and the block hash is less than the target value described by the
 	// bits.
@@ -435,7 +443,9 @@ func checkCTORStored(txes []*wire.MsgTx) bool {
 //
 // The flags do not modify the behavior of this function directly, however they
 // are needed to pass along to checkBlockHeaderSanity.
-func checkBlockSanity(block *cashutil.Block, powLimit *big.Int, timeSource MedianTimeSource, flags BehaviorFlags) error {
+func checkBlockSanity(block *cashutil.Block, powLimit *big.Int,
+	timeSource MedianTimeSource, flags BehaviorFlags) error {
+
 	msgBlock := block.MsgBlock()
 	header := &msgBlock.Header
 	err := checkBlockHeaderSanity(header, powLimit, timeSource, flags)
@@ -467,7 +477,7 @@ func checkBlockSanity(block *cashutil.Block, powLimit *big.Int, timeSource Media
 	}
 
 	// A block must not have more than one coinbase.
-	for i, tx := range transactions[1:] { // todo optimize many loops for transactions
+	for i, tx := range transactions[1:] {
 		if IsCoinBase(tx) {
 			str := fmt.Sprintf("block contains second coinbase at "+
 				"index %d", i+1)
@@ -534,7 +544,8 @@ func checkBlockSanity(block *cashutil.Block, powLimit *big.Int, timeSource Media
 
 // CheckBlockSanity performs some preliminary checks on a block to ensure it is
 // sane before continuing with block processing.  These checks are context free.
-func CheckBlockSanity(block *cashutil.Block, powLimit *big.Int, timeSource MedianTimeSource) error {
+func CheckBlockSanity(block *cashutil.Block, powLimit *big.Int,
+	timeSource MedianTimeSource) error {
 	return checkBlockSanity(block, powLimit, timeSource, BFNone)
 }
 
@@ -604,7 +615,9 @@ func checkSerializedHeight(coinbaseTx *cashutil.Tx, wantHeight int32) error {
 //    the checkpoints are not performed.
 //
 // This function MUST be called with the chain state lock held (for writes).
-func (b *BlockChain) checkBlockHeaderContext(header *wire.BlockHeader, prevNode *blockNode, flags BehaviorFlags) error {
+func (b *BlockChain) checkBlockHeaderContext(header *wire.BlockHeader,
+	prevNode *blockNode, flags BehaviorFlags) error {
+
 	fastAdd := flags&BFFastAdd == BFFastAdd
 	if !fastAdd {
 		// Ensure the difficulty specified in the block header matches
@@ -685,7 +698,9 @@ func (b *BlockChain) checkBlockHeaderContext(header *wire.BlockHeader, prevNode 
 // for how the flags modify its behavior.
 //
 // This function MUST be called with the chain state lock held (for writes).
-func (b *BlockChain) checkBlockContext(block *cashutil.Block, prevNode *blockNode, flags BehaviorFlags) error {
+func (b *BlockChain) checkBlockContext(block *cashutil.Block, prevNode *blockNode,
+	flags BehaviorFlags) error {
+
 	// Perform all block header related validation checks.
 	header := &block.MsgBlock().Header
 	err := b.checkBlockHeaderContext(header, prevNode, flags)
@@ -755,7 +770,9 @@ func (b *BlockChain) checkBlockContext(block *cashutil.Block, prevNode *blockNod
 // http://r6.ca/blog/20120206T005236Z.html.
 //
 // This function MUST be called with the chain state lock held (for reads).
-func (b *BlockChain) checkBIP0030(node *blockNode, block *cashutil.Block, view *UtxoViewpoint) error {
+func (b *BlockChain) checkBIP0030(node *blockNode, block *cashutil.Block,
+	view *UtxoViewpoint) error {
+
 	// Fetch utxos for all of the transaction ouputs in this block.
 	// Typically, there will not be any utxos for any of the outputs.
 	fetchSet := make(map[wire.OutPoint]struct{})
@@ -797,7 +814,9 @@ func (b *BlockChain) checkBIP0030(node *blockNode, block *cashutil.Block, view *
 //
 // NOTE: The transaction MUST have already been sanity checked with the
 // CheckTransactionSanity function prior to calling this function.
-func CheckTransactionInputs(tx *cashutil.Tx, txHeight int32, utxoView *UtxoViewpoint, chainParams *chaincfg.Params) (int64, error) {
+func CheckTransactionInputs(tx *cashutil.Tx, txHeight int32, utxoView *UtxoViewpoint,
+	chainParams *chaincfg.Params) (int64, error) {
+
 	// Coinbase transactions have no inputs.
 	if IsCoinBase(tx) {
 		return 0, nil
@@ -912,7 +931,9 @@ func CheckTransactionInputs(tx *cashutil.Tx, txHeight int32, utxoView *UtxoViewp
 // with that node.
 //
 // This function MUST be called with the chain state lock held (for writes).
-func (b *BlockChain) checkConnectBlock(node *blockNode, block *cashutil.Block, view *UtxoViewpoint, stxos *[]SpentTxOut) error {
+func (b *BlockChain) checkConnectBlock(node *blockNode, block *cashutil.Block,
+	view *UtxoViewpoint, stxos *[]SpentTxOut) error {
+
 	// If the side chain blocks end up in the database, a call to
 	// CheckBlockSanity should be done here in case a previous version
 	// allowed a block that is no longer valid.  However, since the

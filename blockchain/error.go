@@ -111,6 +111,10 @@ const (
 	// when serialized.
 	ErrTxTooBig
 
+	// ErrTxTooSmall indicates a transaction lower than the minimum allowed
+	// size when serialized.
+	ErrTxTooSmall
+
 	// ErrBadTxOutValue indicates an output value for a transaction is
 	// invalid in some way such as being out of range.
 	ErrBadTxOutValue
@@ -232,6 +236,7 @@ var errorCodeStrings = map[ErrorCode]string{
 	ErrNoTxInputs:            "ErrNoTxInputs",
 	ErrNoTxOutputs:           "ErrNoTxOutputs",
 	ErrTxTooBig:              "ErrTxTooBig",
+	ErrTxTooSmall:            "ErrTxTooSmall",
 	ErrBadTxOutValue:         "ErrBadTxOutValue",
 	ErrDuplicateTxInputs:     "ErrDuplicateTxInputs",
 	ErrBadTxInput:            "ErrBadTxInput",

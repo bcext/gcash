@@ -13,6 +13,10 @@ const (
 	// MaxTransactionSize is the maximum size for transactions we're willing to relay/mine
 	MaxTransactionSize = OneMegaByte
 
+	// MinTransactionSize is the minimum size for transaction defined when Magnetic Anomaly
+	// activated.
+	MinTransactionSize = 100
+
 	// MaxTxSigOpsCount allowed number of signature check operations per transaction. */
 	MaxTxSigOpsCount = 20000
 

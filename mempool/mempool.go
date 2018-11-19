@@ -637,9 +637,10 @@ func (mp *TxPool) FetchTransaction(txHash *chainhash.Hash) (*cashutil.Tx, error)
 // more details.
 //
 // This function MUST be called with the mempool lock held (for writes).
-func (mp *TxPool) maybeAcceptTransaction(tx *cashutil.Tx, isNew, rateLimit, rejectDupOrphans bool) ([]*chainhash.Hash, *TxDesc, error) {
-	txHash := tx.Hash()
+func (mp *TxPool) maybeAcceptTransaction(tx *cashutil.Tx, isNew, rateLimit,
+	rejectDupOrphans bool) ([]*chainhash.Hash, *TxDesc, error) {
 
+	txHash := tx.Hash()
 	// Don't accept the transaction if it already exists in the pool.  This
 	// applies to orphan transactions as well when the reject duplicate
 	// orphans flag is set.  This check is intended to be a quick check to

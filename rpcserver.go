@@ -1994,6 +1994,8 @@ func chainErrToGBTErrString(err error) string {
 		return "bad-txns-nooutputs"
 	case blockchain.ErrTxTooBig:
 		return "bad-txns-size"
+	case blockchain.ErrTxTooSmall:
+		return "bad-txns-size"
 	case blockchain.ErrBadTxOutValue:
 		return "bad-txns-outputvalue"
 	case blockchain.ErrDuplicateTxInputs:
