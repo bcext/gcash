@@ -213,23 +213,6 @@ func (b *BlockChain) ProcessBlock(block *cashutil.Block, flags BehaviorFlags) (b
 		return false, true, nil
 	}
 
-	if !fastAdd {
-		// Apply the bitcoin-ABC difficulty algorithm, the block's difficulty calculation
-		// to be checked depends on the previous block's timestamp and difficulty. So the
-		// new difficulty algorithm can not deal with the orphan block.
-		requiredTarget, err := b.GetNextWorkRequired(blockHeader)
-		if err != nil {
-			return false, false, ruleError(ErrCalcDifficulty, "can not calculate difficulty")
-		}
-		currentTarget := CompactToBig(blockHeader.Bits)
-		if currentTarget.Cmp(CompactToBig(requiredTarget)) > 0 {
-			str := fmt.Sprintf("block target difficulty of %064x "+
-				"is too low when compared to the previous "+
-				"checkpoint", currentTarget)
-			return false, false, ruleError(ErrDifficultyTooLow, str)
-		}
-	}
-
 	// The block has passed all context independent checks and appears sane
 	// enough to potentially accept it into the block chain.
 	isMainChain, err := b.maybeAcceptBlock(block, flags)
