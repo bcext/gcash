@@ -280,6 +280,8 @@ var MainNetParams = Params{
 		{504031, newHashFromStr("0000000000000000011ebf65b60d0a3de80b8175be709d653b4c1a1beeb6ab9c")},
 		// Monolith activation.
 		{530359, newHashFromStr("0000000000000000011ada8bd08f46074f44a8f155396f43e38acf9501c49103")},
+		// Magnetic anomaly activation.
+		{556767, newHashFromStr("0000000000000000004626ff6e3b936941d341c5932ece4357eeccac44e6d56c")},
 	},
 
 	// Consensus rule change deployments.
