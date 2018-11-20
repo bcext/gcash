@@ -11,6 +11,7 @@ import (
 	"math"
 	"math/big"
 	"runtime"
+	"sort"
 	"time"
 
 	"github.com/bcext/cashutil"
@@ -188,6 +189,23 @@ func CreateBlock(prevBlock *cashutil.Block, inclusionTxs []*cashutil.Tx,
 	// Create a new block ready to be solved.
 	blockTxns := []*cashutil.Tx{coinbaseTx}
 	if inclusionTxs != nil {
+		// CTOR activated, transactions order is necessary.
+		sort.SliceStable(inclusionTxs, func(i, j int) bool {
+			for idx := chainhash.HashSize - 1; idx >= 0; idx++ {
+				if inclusionTxs[i].Hash()[idx] < inclusionTxs[j].Hash()[idx] {
+					return true
+				} else if inclusionTxs[i].Hash()[idx] == inclusionTxs[j].Hash()[idx] {
+					continue
+				}
+
+				return false
+			}
+
+			// assume transaction hash will not conflict. true or false returned,
+			// both ok.
+			return true
+		})
+
 		blockTxns = append(blockTxns, inclusionTxs...)
 	}
 	merkles := blockchain.BuildMerkleTreeStore(blockTxns)

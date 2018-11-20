@@ -732,9 +732,7 @@ func (b *BlockChain) checkBlockContext(block *cashutil.Block, prevNode *blockNod
 
 		// Ensure all transactions in the block are finalized.
 		for _, tx := range block.Transactions() {
-			if !IsFinalizedTransaction(tx, blockHeight,
-				blockTime) {
-
+			if !IsFinalizedTransaction(tx, blockHeight, blockTime) {
 				str := fmt.Sprintf("block contains unfinalized "+
 					"transaction %v", tx.Hash())
 				return ruleError(ErrUnfinalizedTx, str)
@@ -988,12 +986,6 @@ func (b *BlockChain) checkConnectBlock(node *blockNode, block *cashutil.Block,
 		return err
 	}
 
-	// BIP0016 describes a pay-to-script-hash type that is considered a
-	// "standard" type.  The rules for this BIP only apply to transactions
-	// after the timestamp defined by txscript.Bip16Activation.  See
-	// https://en.bitcoin.it/wiki/BIP_0016 for more details.
-	enforceBIP0016 := node.timestamp >= txscript.Bip16Activation.Unix()
-
 	// The number of signature operations must be less than the maximum
 	// allowed per block.  Note that the preliminary sanity checks on a
 	// block also include a check similar to this one, but this check
@@ -1034,8 +1026,7 @@ func (b *BlockChain) checkConnectBlock(node *blockNode, block *cashutil.Block,
 	// bounds.
 	var totalFees int64
 	for _, tx := range transactions {
-		txFee, err := CheckTransactionInputs(tx, node.height, view,
-			b.chainParams)
+		txFee, err := CheckTransactionInputs(tx, node.height, view, b.chainParams)
 		if err != nil {
 			return err
 		}
@@ -1068,8 +1059,7 @@ func (b *BlockChain) checkConnectBlock(node *blockNode, block *cashutil.Block,
 	for _, txOut := range transactions[0].MsgTx().TxOut {
 		totalSatoshiOut += txOut.Value
 	}
-	expectedSatoshiOut := CalcBlockSubsidy(node.height, b.chainParams) +
-		totalFees
+	expectedSatoshiOut := CalcBlockSubsidy(node.height, b.chainParams) + totalFees
 	if totalSatoshiOut > expectedSatoshiOut {
 		str := fmt.Sprintf("coinbase transaction for block pays %v "+
 			"which is more than expected value of %v",
@@ -1092,6 +1082,12 @@ func (b *BlockChain) checkConnectBlock(node *blockNode, block *cashutil.Block,
 	// Blocks created after the BIP0016 activation time need to have the
 	// pay-to-script-hash checks enabled.
 	var scriptFlags txscript.ScriptFlags
+
+	// BIP0016 describes a pay-to-script-hash type that is considered a
+	// "standard" type.  The rules for this BIP only apply to transactions
+	// after the timestamp defined by txscript.Bip16Activation.  See
+	// https://en.bitcoin.it/wiki/BIP_0016 for more details.
+	enforceBIP0016 := node.timestamp >= txscript.Bip16Activation.Unix()
 	if enforceBIP0016 {
 		scriptFlags |= txscript.ScriptBip16
 	}
@@ -1133,8 +1129,7 @@ func (b *BlockChain) checkConnectBlock(node *blockNode, block *cashutil.Block,
 			// A transaction can only be included within a block
 			// once the sequence locks of *all* its inputs are
 			// active.
-			sequenceLock, err := b.calcSequenceLock(node, tx, view,
-				false)
+			sequenceLock, err := b.calcSequenceLock(node, tx, view, false)
 			if err != nil {
 				return err
 			}
