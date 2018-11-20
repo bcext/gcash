@@ -144,8 +144,6 @@ func (b *BlockChain) ProcessBlock(block *cashutil.Block, flags BehaviorFlags) (b
 	b.chainLock.Lock()
 	defer b.chainLock.Unlock()
 
-	fastAdd := flags&BFFastAdd == BFFastAdd
-
 	blockHash := block.Hash()
 	log.Tracef("Processing block %v", blockHash)
 
