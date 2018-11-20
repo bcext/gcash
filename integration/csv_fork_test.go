@@ -347,6 +347,7 @@ func spendCSVOutput(redeemScript []byte, csvUTXO *wire.OutPoint,
 		Sequence:         sequence,
 	})
 	tx.AddTxOut(targetOutput)
+	tx.AddTxOut(targetOutput)
 
 	b := txscript.NewScriptBuilder().
 		AddOp(txscript.OP_TRUE).
@@ -431,7 +432,7 @@ func TestBIP0068AndBIP0112Activation(t *testing.T) {
 	)
 
 	sweepOutput := &wire.TxOut{
-		Value:    outputAmt - 5000,
+		Value:    (outputAmt - 5000) / 2,
 		PkScript: harnessScript,
 	}
 

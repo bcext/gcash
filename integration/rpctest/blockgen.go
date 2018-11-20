@@ -6,6 +6,7 @@
 package rpctest
 
 import (
+	"bytes"
 	"errors"
 	"math"
 	"math/big"
@@ -175,6 +176,13 @@ func CreateBlock(prevBlock *cashutil.Block, inclusionTxs []*cashutil.Tx,
 		miningAddr, mineTo, net)
 	if err != nil {
 		return nil, err
+	}
+
+	// check transaction size
+	coinbaseTxSize := coinbaseTx.MsgTx().SerializeSize()
+	if coinbaseTxSize < blockchain.MinTransactionSize {
+		coinbaseTx.MsgTx().TxIn[0].SignatureScript = append(coinbaseScript,
+			bytes.Repeat([]byte{0}, blockchain.MinTransactionSize-coinbaseTxSize)...)
 	}
 
 	// Create a new block ready to be solved.
