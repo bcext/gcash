@@ -203,7 +203,7 @@ func CalcBlockSubsidy(height int32, chainParams *chaincfg.Params) int64 {
 
 // CheckTransactionSanity performs some preliminary checks on a transaction to
 // ensure it is sane.  These checks are context free.
-func CheckTransactionSanity(tx *cashutil.Tx) error {
+func CheckTransactionSanity(tx *cashutil.Tx, magneticAnomaly bool) error {
 	// A transaction must have at least one input.
 	msgTx := tx.MsgTx()
 	if len(msgTx.TxIn) == 0 {
@@ -224,7 +224,7 @@ func CheckTransactionSanity(tx *cashutil.Tx) error {
 		return ruleError(ErrTxTooBig, str)
 	}
 
-	if serializedTxSize < MinTransactionSize {
+	if magneticAnomaly && serializedTxSize < MinTransactionSize {
 		str := fmt.Sprintf("serialized transaction is too small - got"+
 			"%d, min %d", serializedTxSize, MinTransactionSize)
 		return ruleError(ErrTxTooSmall, str)
@@ -459,6 +459,12 @@ func checkBlockSanity(block *cashutil.Block, powLimit *big.Int,
 		return ruleError(ErrNoTransactions, "block does not contain "+
 			"any transactions")
 	}
+	magneticAnomaly := flags&MagneticAnomalyActivated == MagneticAnomalyActivated
+	if magneticAnomaly {
+		if !checkCTORStored(block.MsgBlock().Transactions[1:]) {
+			return ruleError(ErrCTORsort, "transaction order is invalid")
+		}
+	}
 
 	// A block must not exceed the maximum allowed block payload when
 	// serialized.
@@ -488,7 +494,7 @@ func checkBlockSanity(block *cashutil.Block, powLimit *big.Int,
 	// Do some preliminary checks on each transaction to ensure they are
 	// sane before continuing.
 	for _, tx := range transactions {
-		err := CheckTransactionSanity(tx)
+		err := CheckTransactionSanity(tx, magneticAnomaly)
 		if err != nil {
 			return err
 		}
@@ -526,17 +532,19 @@ func checkBlockSanity(block *cashutil.Block, powLimit *big.Int,
 	// The number of signature operations must be less than the maximum
 	// allowed per block.
 	var totalSigOps, lastSigOps int
+	maxSigOpsCount := GetMaxBlockSigOpsCount(serializedSize)
 	for _, tx := range transactions {
 		// We could potentially overflow the accumulator so check for
 		// overflow.
 		lastSigOps = totalSigOps
 		totalSigOps += GetSigOpCost(tx)
-	}
-	if totalSigOps < lastSigOps || totalSigOps > GetMaxBlockSigOpsCount(serializedSize) {
-		str := fmt.Sprintf("block contains too many signature "+
-			"operations - got %v, max %v", totalSigOps,
-			GetMaxBlockSigOpsCount(serializedSize))
-		return ruleError(ErrTooManySigOps, str)
+
+		if totalSigOps < lastSigOps || totalSigOps > maxSigOpsCount {
+			str := fmt.Sprintf("block contains too many signature "+
+				"operations - got %v, max %v", totalSigOps,
+				GetMaxBlockSigOpsCount(serializedSize))
+			return ruleError(ErrTooManySigOps, str)
+		}
 	}
 
 	return nil
@@ -1144,7 +1152,7 @@ func (b *BlockChain) checkConnectBlock(node *blockNode, block *cashutil.Block,
 	}
 
 	// If the UAHF is enabled, we start accepting replay protected txns
-	if isUAHFenabled(node.parent, b.chainParams) {
+	if node.height > b.chainParams.UAHFHeight {
 		scriptFlags |= txscript.ScriptVerifyStrictEncoding
 		scriptFlags |= txscript.ScriptEnableSighashForkid
 	}
@@ -1153,7 +1161,7 @@ func (b *BlockChain) checkConnectBlock(node *blockNode, block *cashutil.Block,
 	// s in their signature. We also make sure that signature that are supposed
 	// to fail (for instance in multisig or other forms of smart contracts) are
 	// null.
-	if isDAAEnabled(node.parent, b.chainParams) {
+	if node.height >= b.chainParams.DAAHeight {
 		scriptFlags |= txscript.ScriptVerifyLowS
 		scriptFlags |= txscript.ScriptVerifyNullFail
 	}
@@ -1162,7 +1170,7 @@ func (b *BlockChain) checkConnectBlock(node *blockNode, block *cashutil.Block,
 	// transactions using the OP_CHECKDATASIG opcode and it's verify
 	// alternative. We also start enforcing push only signatures and
 	// clean stack.
-	if b.IsMagneticAnomalyEnabled(&node.parent.hash, b.chainParams) {
+	if node.height >= b.chainParams.MagneticAnomalyActivationHeight {
 		scriptFlags |= txscript.ScriptEnableCheckDataSig
 		scriptFlags |= txscript.ScriptVerifySigPushOnly
 		scriptFlags |= txscript.ScriptVerifyCleanStack
@@ -1231,35 +1239,6 @@ func (b *BlockChain) CheckConnectBlockTemplate(block *cashutil.Block) error {
 	view.SetBestHash(&tip.hash)
 	newNode := newBlockNode(&header, tip)
 	return b.checkConnectBlock(newNode, block, view, nil)
-}
-
-func isUAHFenabled(prevBlock *blockNode, params *chaincfg.Params) bool {
-	if prevBlock == nil {
-		return false
-	}
-
-	return prevBlock.height >= params.UAHFHeight
-}
-
-func isDAAEnabled(prevBlock *blockNode, params *chaincfg.Params) bool {
-	if prevBlock == nil {
-		return false
-	}
-
-	return prevBlock.height >= params.DAAHeight
-}
-
-// IsMagneticAnomalyEnabled check whether megnetic anomaly(Nov 15, 2018 hard fork)
-// is activated or not.
-func (b *BlockChain) IsMagneticAnomalyEnabled(prevNodeHash *chainhash.Hash,
-	params *chaincfg.Params) bool {
-
-	prevNode := b.index.LookupNode(prevNodeHash)
-	if prevNode == nil {
-		return false
-	}
-
-	return prevNode.CalcPastMedianTime().Unix() > params.MagneticAnomalyActivationTime
 }
 
 func isReplayProtectionEnabled(prevBlock *blockNode, params *chaincfg.Params) bool {

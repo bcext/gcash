@@ -170,7 +170,7 @@ func (b *BlockChain) GetNextWorkRequired(header *wire.BlockHeader) (uint32, erro
 		return prevBlock.bits, nil
 	}
 
-	if isDAAEnabled(prevBlock, b.chainParams) {
+	if prevBlock.height+1 >= b.chainParams.DAAHeight {
 		return b.getNextCashWorkRequired(prevBlock, header)
 	}
 

@@ -734,34 +734,32 @@ mempoolLoop:
 	txFees[0] = -totalFees
 
 	// [CTOR]sort transaction according to the its hash.
-	if g.chain.IsMagneticAnomalyEnabled(&best.Hash, g.chainParams) {
-		txs := blockTxns[1:]
-		sort.SliceStable(txs, func(i, j int) bool {
-			for idx := chainhash.HashSize - 1; idx >= 0; idx++ {
-				if txs[i].Hash()[idx] < txs[j].Hash()[idx] {
-					return true
-				} else if txs[i].Hash()[idx] == txs[j].Hash()[idx] {
-					continue
-				}
-
-				return false
+	txs := blockTxns[1:]
+	sort.SliceStable(txs, func(i, j int) bool {
+		for idx := chainhash.HashSize - 1; idx >= 0; idx++ {
+			if txs[i].Hash()[idx] < txs[j].Hash()[idx] {
+				return true
+			} else if txs[i].Hash()[idx] == txs[j].Hash()[idx] {
+				continue
 			}
 
-			// assume transaction hash will not conflict. true or false returned,
-			// both ok.
-			return true
-		})
-		blockTxns = append(blockTxns[:1], txs...)
-		// here sort the txFees and txSigOpCosts make them matched with transaction.
-		sortTxFees := make([]int64, len(txFees))
-		sortTxFees[0] = txFees[0]
-		sortTxSigOpCosts := make([]int64, len(txSigOpCosts))
-		sortTxSigOpCosts[0] = txSigOpCosts[0]
-		for i, tx := range blockTxns[1:] {
-			offset := sortRecord[*tx.Hash()]
-			sortTxFees[i+1] = txFees[offset]
-			sortTxSigOpCosts[i+1] = txSigOpCosts[offset]
+			return false
 		}
+
+		// assume transaction hash will not conflict. true or false returned,
+		// both ok.
+		return true
+	})
+	blockTxns = append(blockTxns[:1], txs...)
+	// here sort the txFees and txSigOpCosts make them matched with transaction.
+	sortTxFees := make([]int64, len(txFees))
+	sortTxFees[0] = txFees[0]
+	sortTxSigOpCosts := make([]int64, len(txSigOpCosts))
+	sortTxSigOpCosts[0] = txSigOpCosts[0]
+	for i, tx := range blockTxns[1:] {
+		offset := sortRecord[*tx.Hash()]
+		sortTxFees[i+1] = txFees[offset]
+		sortTxSigOpCosts[i+1] = txSigOpCosts[offset]
 	}
 
 	// Calculate the next expected block version based on the state of the

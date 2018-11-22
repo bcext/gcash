@@ -30,6 +30,9 @@ const (
 	// not be performed.
 	BFNoPoWCheck
 
+	// MagneticAnomalyActivated means the hardfork at Nov, 15 2018.
+	MagneticAnomalyActivated
+
 	// BFNone is a convenience value to specifically indicate no flags.
 	BFNone BehaviorFlags = 0
 )
@@ -163,11 +166,8 @@ func (b *BlockChain) ProcessBlock(block *cashutil.Block, flags BehaviorFlags) (b
 		return false, false, ruleError(ErrDuplicateBlock, str)
 	}
 
-	magneticAnomaylyEnabled := b.IsMagneticAnomalyEnabled(&block.MsgBlock().Header.PrevBlock, b.chainParams)
-	if magneticAnomaylyEnabled {
-		if !checkCTORStored(block.MsgBlock().Transactions[1:]) {
-			return false, false, ruleError(ErrCTORsort, "transaction order is invalid")
-		}
+	if block.Height() > b.chainParams.MagneticAnomalyActivationHeight {
+		flags |= MagneticAnomalyActivated
 	}
 
 	// Perform preliminary sanity checks on the block and its transactions.
@@ -199,7 +199,7 @@ func (b *BlockChain) ProcessBlock(block *cashutil.Block, flags BehaviorFlags) (b
 	}
 
 	// Handle orphan blocks.
-	prevHash := &blockHeader.PrevBlock
+	prevHash := &block.MsgBlock().Header.PrevBlock
 	prevHashExists, err := b.blockExists(prevHash)
 	if err != nil {
 		return false, false, err
