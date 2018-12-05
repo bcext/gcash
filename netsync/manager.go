@@ -551,9 +551,15 @@ func (sm *SyncManager) handleBlockMsg(bmsg *blockMsg) {
 		// rejected as opposed to something actually going wrong, so log
 		// it as such.  Otherwise, something really did go wrong, so log
 		// it as an actual error.
-		if _, ok := err.(blockchain.RuleError); ok {
+		if ruleError, ok := err.(blockchain.RuleError); ok {
 			log.Infof("Rejected block %v from %s: %v", blockHash,
 				peer, err)
+			if ruleError.ErrorCode == blockchain.ErrUnexpectedDifficulty {
+				log.Warnf("Got unexpected difficulty block %v from "+
+					"%s -- disconnecting", blockHash, peer.Addr())
+				peer.Disconnect()
+				return
+			}
 		} else {
 			log.Errorf("Failed to process block %v: %v",
 				blockHash, err)
