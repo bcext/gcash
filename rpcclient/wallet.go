@@ -873,20 +873,20 @@ type FutureGetNewAddressResult chan *response
 
 // Receive waits for the response promised by the future and returns a new
 // address.
-func (r FutureGetNewAddressResult) Receive() (cashutil.Address, error) {
+func (r FutureGetNewAddressResult) Receive() (string, error) {
 	res, err := receiveFuture(r)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	// Unmarshal result as a string.
 	var addr string
 	err = json.Unmarshal(res, &addr)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
-	return cashutil.DecodeAddress(addr, &chaincfg.MainNetParams)
+	return addr, nil
 }
 
 // GetNewAddressAsync returns an instance of a type that can be used to get the
@@ -900,7 +900,7 @@ func (c *Client) GetNewAddressAsync(account string) FutureGetNewAddressResult {
 }
 
 // GetNewAddress returns a new address.
-func (c *Client) GetNewAddress(account string) (cashutil.Address, error) {
+func (c *Client) GetNewAddress(account string) (string, error) {
 	return c.GetNewAddressAsync(account).Receive()
 }
 
