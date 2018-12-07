@@ -1015,27 +1015,17 @@ type FutureGetAddressesByAccountResult chan *response
 
 // Receive waits for the response promised by the future and returns the list of
 // addresses associated with the passed account.
-func (r FutureGetAddressesByAccountResult) Receive() ([]cashutil.Address, error) {
+func (r FutureGetAddressesByAccountResult) Receive() ([]string, error) {
 	res, err := receiveFuture(r)
 	if err != nil {
 		return nil, err
 	}
 
-	// Unmashal result as an array of string.
-	var addrStrings []string
-	err = json.Unmarshal(res, &addrStrings)
+	// Unmarshal result as an array of string.
+	var addrs []string
+	err = json.Unmarshal(res, &addrs)
 	if err != nil {
 		return nil, err
-	}
-
-	addrs := make([]cashutil.Address, 0, len(addrStrings))
-	for _, addrStr := range addrStrings {
-		addr, err := cashutil.DecodeAddress(addrStr,
-			&chaincfg.MainNetParams)
-		if err != nil {
-			return nil, err
-		}
-		addrs = append(addrs, addr)
 	}
 
 	return addrs, nil
@@ -1053,7 +1043,7 @@ func (c *Client) GetAddressesByAccountAsync(account string) FutureGetAddressesBy
 
 // GetAddressesByAccount returns the list of addresses associated with the
 // passed account.
-func (c *Client) GetAddressesByAccount(account string) ([]cashutil.Address, error) {
+func (c *Client) GetAddressesByAccount(account string) ([]string, error) {
 	return c.GetAddressesByAccountAsync(account).Receive()
 }
 
