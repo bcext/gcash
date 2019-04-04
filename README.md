@@ -5,6 +5,8 @@ gcash
 [![ISC License](http://img.shields.io/badge/license-ISC-blue.svg)](http://copyfree.org)
 [![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg)](http://godoc.org/github.com/bcext/gcash)
 
+This repository will not be updated and a wonderfull repository will useful for you. Please refer to this link[bchd](https://github.com/gcash/bchd)!
+
 gcash is an alternative full node bitcoin cash implementation written in Go (golang). This project
 is currently under active development and is in a Beta state.
 
